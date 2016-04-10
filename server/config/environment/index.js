@@ -25,11 +25,11 @@ var all = {
   ip: process.env.IP || '0.0.0.0',
 
   // Should we populate the DB with sample data?
-  seedDB: false,
+  seedDB: true,
 
   // Secret for session, you will want to change this and make it an environment variable
   secrets: {
-    session: 'info-system-secret'
+    session: 'LEG-info-system-secret'
   },
 
   // List of user roles
@@ -40,7 +40,9 @@ var all = {
     options: {
       db: {
         safe: true
-      }
+      }/*,
+      user: 'devrobot_mongoadmin',
+      pass: 'bi6vur7Foo'*/
     }
   },
 

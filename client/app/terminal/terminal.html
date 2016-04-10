@@ -1,0 +1,22 @@
+<div class="col-md-12" ng-controller="TerminalCtrl" id="Terminal" style="margin-bottom: 1em">
+    <div class="row"ng-repeat="(dindex,groupList) in deviceList">
+        GRUPPE: {{dindex+1}}
+        <ul style="padding-left: 0px" class="icon-list-zaehler2" ng-repeat="deviceList in groupList" >
+            <li class="col-md-2 col-sm-2 col-xs-2" style="padding: 2px 2px 2px 2px"
+                ng-repeat="(tindex, device) in deviceList">
+                <div class="terminallist">
+                    <div ng-class="{'on': true == device.power, 'off': true != device.power,
+                     'error': device.error_code > 0}"
+                         ng-click="selectRow(tindex,dindex)"  style="height: 4em">
+                        <div style="position: absolute; right: 0.4em; color: whitesmoke">{{device.powerOn_hours}} H</div>
+                        <div ng-show="device.error_code > 0" style="position: absolute; left: 0.4em; bottom: 0.6em; color: whitesmoke">Error: {{device.error_code}}</div>
+                        <div ng-show="device.service_code > 0" ng-class="{'warning': device.service_code > 0}" style="position: absolute; left: 0.4em; bottom: 0.6em; color: whitesmoke">Service: {{device.service_code}}</div>
+                        <div style="position: absolute; right: 2em; bottom: 0.6em; color: whitesmoke">UV:</div>
+                        <img ng-src="{{icon.uv[device.uv]}}"
+                             style="position: absolute; right: 2px; bottom: 5px; ">
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

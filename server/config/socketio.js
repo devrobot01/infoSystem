@@ -39,7 +39,7 @@ module.exports = function (socketio) {
 
   socketio.on('connection', function (socket) {
     socket.address = socket.handshake.address !== null ?
-            socket.handshake.address.address + ':' + socket.handshake.address.port :
+      socket.request.connection.remoteAddress + ':' + socket.request.connection.remotePort + ' ID: ' + socket.id :
             process.env.DOMAIN;
 
     socket.connectedAt = new Date();

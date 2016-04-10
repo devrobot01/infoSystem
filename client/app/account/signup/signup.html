@@ -21,13 +21,13 @@
 
         <div class="form-group" ng-class="{ 'has-success': form.email.$valid && submitted,
                                             'has-error': form.email.$invalid && submitted }">
-          <label>Email</label>
+          <label>Username</label>
 
-          <input type="email" name="email" class="form-control" ng-model="user.email"
+          <input type="text" name="email" class="form-control" ng-model="user.email"
                  required
                  mongoose-error/>
           <p class="help-block" ng-show="form.email.$error.email && submitted">
-            Doesn't look like a valid email.
+            Doesn't look like a valid Username.
           </p>
           <p class="help-block" ng-show="form.email.$error.required && submitted">
             What's your email address?

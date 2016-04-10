@@ -1,6 +1,5 @@
 <div class="top left" ng-controller="DateTimeCtrl">
-    <div class="date small dimmed">{{dateTime.date}}</div>
-    <div class="time">{{dateTime.time}}</div>
-    <div class="calendar xxsmall">{{dateTime.calendar}}</div>
+    <div class="date small dimmed">{{ clock | date:'EEEE, dd MMMM yyyy'}}</div>
+    <div class="time">{{ clock | date:'HH:mm:ss' }}</div>
 </div>
 
