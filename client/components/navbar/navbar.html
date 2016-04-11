@@ -11,6 +11,7 @@
     </div>
     <div collapse="isCollapsed" class="navbar-collapse collapse" id="navbar-main">
       <ul class="nav navbar-nav">
+        <li ng-show="isLoggedIn()" ng-class="active"><a style="color: #d9534f; font-size: 1.5em">Configuration Mode</a></li>
         <li ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a href="/admin">Admin</a></li>
       </ul>
 

@@ -20,26 +20,63 @@
     transform: rotateY(180deg); /* Beim Mouse-Over wird die Szene umgedreht */
 }
 .terminallist .on {
-    border-radius: 5px ;
-    background: rgba(82, 124, 54, 1);
+    /*border-radius: 5px ;*/
+    background-color: #5cb85c;
 }
 
 .terminallist .off {
-    border-radius: 5px;
+    /*border-radius: 5px;*/
     background-color: #a3aca6;
 }
 
 .terminallist .warning {
-    background-color: #ddd900;
+    background-color: #f0ad4e;
 }
+.terminallist .warningOn {
+    /*border-radius: 5px;*/
+    /*background-color: #d9534f;*/
+    background: linear-gradient(
+            to bottom,
+            #5cb85c 0%,
+            #5cb85c 50%,
+            #f0ad4e 50%,
+            #f0ad4e 100%
+    )}
 
-.terminallist .error {
-    border-radius: 5px;
-    background-color: #c25910;
-}
+.terminallist .warningOff {
+    /*border-radius: 5px;*/
+    /*background-color: #d9534f;*/
+    background: linear-gradient(
+            to bottom,
+            #a3aca6 0%,
+            #a3aca6 50%,
+            #f0ad4e 50%,
+            #f0ad4e 100%
+    )}
+
+.terminallist .errorOn {
+    /*border-radius: 5px;*/
+    /*background-color: #d9534f;*/
+    background: linear-gradient(
+            to bottom,
+            #5cb85c 0%,
+            #5cb85c 50%,
+            #d9534f 50%,
+            #d9534f 100%
+    )}
+.terminallist .errorOff {
+    /*border-radius: 5px;*/
+    /*background-color: #d9534f;*/
+    background: linear-gradient(
+            to bottom,
+            #a3aca6 0%,
+            #a3aca6 50%,
+            #d9534f 50%,
+            #d9534f 100%
+    )}
 
 .terminallist .front-image {
-    background: url(/images/yeoman.png) 0 0 no-repeat;
+    /*background: url(/images/yeoman.png) 0 0 no-repeat;*/
 }
 
 .terminallist .back {

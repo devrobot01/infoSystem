@@ -1,10 +1,13 @@
-.modal-primary .modal-header,
+.modal-off .modal-primary .modal-header,
 .modal-info .modal-header,
 .modal-success .modal-header,
 .modal-warning .modal-header,
 .modal-danger .modal-header {
   color: #fff;
   border-radius: 5px 5px 0 0;
+}
+.modal-off .modal-header {
+  background: #a3aca6;
 }
 .modal-primary .modal-header {
   background: #428bca;

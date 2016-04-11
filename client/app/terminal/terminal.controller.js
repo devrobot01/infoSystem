@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-    .controller('TerminalCtrl', function ($scope) {
+    .controller('TerminalCtrl', function ($scope, Modal, Auth) {
 
         $scope.icon = {
             uv: {
@@ -132,14 +132,18 @@ angular.module('infoSystemApp')
         }];
 
         $scope.selectRow = function(device, group) {
-            console.log("row: " + device + " col: " + group);
-            if($scope.deviceList[group].group[device].power === false) {
-                $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
-            } else {
-                $scope.deviceList[group].group[device].uv = !$scope.deviceList[group].group[device].uv;
-                if($scope.deviceList[group].group[device].uv === false){
+            if(!Auth.isLoggedIn()) {
+                console.log("row: " + device + " col: " + group);
+                if ($scope.deviceList[group].group[device].power === false) {
                     $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
+                } else {
+                    $scope.deviceList[group].group[device].uv = !$scope.deviceList[group].group[device].uv;
+                    if ($scope.deviceList[group].group[device].uv === false) {
+                        $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
+                    }
                 }
             }
         };
+
+        $scope.adminview = Modal.confirm.change(function (device) {});
     });
