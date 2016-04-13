@@ -19,9 +19,17 @@
 .terminallist:active .turnaround {
     transform: rotateY(180deg); /* Beim Mouse-Over wird die Szene umgedreht */
 }
-.terminallist .on {
+.terminallist .background {
+    border-radius: 5px ;
+    background-color: #e6e6e6;
+}
+.terminallist .onPower{
     /*border-radius: 5px ;*/
     background-color: #5cb85c;
+}
+.terminallist .onUv{
+    /*border-radius: 5px ;*/
+    background-color: #734999;
 }
 
 .terminallist .off {

@@ -131,16 +131,24 @@ angular.module('infoSystemApp')
             }]
         }];
 
-        $scope.selectRow = function(device, group) {
+        $scope.switchPower = function(device, group) {
             if(!Auth.isLoggedIn()) {
                 console.log("row: " + device + " col: " + group);
                 if ($scope.deviceList[group].group[device].power === false) {
                     $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
                 } else {
-                    $scope.deviceList[group].group[device].uv = !$scope.deviceList[group].group[device].uv;
-                    if ($scope.deviceList[group].group[device].uv === false) {
-                        $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
+                    $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
+                    if($scope.deviceList[group].group[device].uv == true) {
+                        $scope.deviceList[group].group[device].uv = !$scope.deviceList[group].group[device].uv;
                     }
+                }
+            }
+        };
+        $scope.switchUv = function(device, group) {
+            if(!Auth.isLoggedIn()) {
+                if ($scope.deviceList[group].group[device].power === false) {
+                } else {
+                    $scope.deviceList[group].group[device].uv = !$scope.deviceList[group].group[device].uv;
                 }
             }
         };
