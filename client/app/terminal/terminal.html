@@ -1,30 +1,29 @@
 <div class="col-md-12" ng-controller="TerminalCtrl" id="Terminal" style="margin-bottom: 1em">
-    <div class="row"ng-repeat="(dindex,groupList) in deviceList">
-        GRUPPE: {{dindex+1}}
-        <ul style="padding-left: 0px" class="icon-list-zaehler2" ng-repeat="deviceList in groupList" >
-            <li class="col-md-2 col-sm-2 col-xs-2" style="padding: 3px 3px 3px 3px"
+    <div id="row{{$index}}" class="row" ng-repeat="(dindex,groupList) in deviceList track by $index" ng-show="$index == _counter">
+
+        <div class="container-fluid col-sm-offset-2">
+        <ul style="padding-left: 0px" class="icon-list-zaehler2" ng-repeat="deviceList in groupList">
+            <li class="col-sm-3 col-xs-6" style="padding: 3px 3px 3px 3px"
                 ng-repeat="(tindex, device) in deviceList">
                 <div class="terminallist" ng-click="adminview(device)">
                     <div style="height: 14em" class="background">
-                        <div ng-class="{'error': device.error_code > 0,'warning': device.service_code > 0}"
-                             ng-show="device.error_code > 0 || device.service_code > 0"
+                        <div ng-show="device.error_code > 0 || device.service_code > 0"
                              style="position: absolute; left: 0.0em; top: 0.0em; height: 100%;width: 40%;"></div>
                         <div style="position: absolute; left: 0.4em;">Lampenwechsel in:</div>
                         <div style="position: absolute; right: 0.4em;">{{device.powerOn_hours}}h</div>
                         <div style="position: relative; top: 2em; width: auto; padding-left: 0.4em; padding-right: 0.4em">
                             <button style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
                                     ng-click="switchPower(tindex,dindex)">I/O</button>
-                            <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'onUv': true == device.uv, 'off': true != device.uv}"
-                                    ng-click="switchUv(tindex,dindex)">UV</button>
-                            <div style="left: 0.4em; bottom: 0.4em; margin-top: 0.5em;">
+                            <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'onUv': true == device.uv, 'off': true != device.uv}">UV</button>
+                            <div style="margin-top: 0.5em;">
                                 <div class="input-group">
-                                    <span class="input-group-addon">
+                                    <span class="input-group-addon"  ng-show="device.error_code > 0 || device.service_code > 0" ng-class="{'error': device.error_code > 0,'warning': device.service_code > 0}">
                                         <div ng-show="device.error_code > 0">Error</div>
                                         <div ng-show="device.service_code > 0">Service</div>
                                     </span>
-                                    <input ng-show="device.error_code > 0" type="text" class="form-control" aria-describedby="basic-addon1" value="{{device.error_code}}">
-                                    <input ng-show="device.service_code > 0" type="text" class="form-control" aria-describedby="basic-addon1" value="{{device.service_code}}">
-                                    <input ng-hide="device.error_code > 0 || device.service_code > 0"type="text" class="form-control" aria-describedby="basic-addon1">
+                                    <input readonly="readonly" ng-show="device.error_code > 0" type="text" class="form-control" aria-describedby="basic-addon1" value="{{device.error_code}}">
+                                    <input readonly="readonly" ng-show="device.service_code > 0" type="text" class="form-control" aria-describedby="basic-addon1" value="{{device.service_code}}">
+                                    <input readonly="readonly" ng-hide="device.error_code > 0 || device.service_code > 0" type="text" class="form-control" aria-describedby="basic-addon1">
                                 </div>
                             </div>
                         </div>
@@ -32,6 +31,12 @@
                 </div>
             </li>
         </ul>
+        </div>
+        <div class="text-center">
+            <button style="width: 4.5em; height: 3em" ng-click="go($index - 1)">Prev</button>
+            GRUPPE: {{dindex+1}} von {{deviceList.length}}
+            <button style="width: 4.5em; height: 3em" ng-click="go($index + 1)">Next</button>
+        </div>
     </div>
 </div>
 

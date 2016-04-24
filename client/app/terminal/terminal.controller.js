@@ -38,70 +38,6 @@ angular.module('infoSystemApp')
                 service_date: '',
                 error_code: -1,
                 error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            },{
-                power: false,
-                uv: false,
-                powerOn_hours: '0',
-                service_code: -1,
-                service_date: '',
-                error_code: -1,
-                error_date: ''
-            }, {
-                power: true,
-                uv: true,
-                powerOn_hours: '1',
-                service_code: -1,
-                service_date: '',
-                error_code: 42,
-                error_date: ''
             }]},{
             group:[
             {
@@ -130,6 +66,12 @@ angular.module('infoSystemApp')
                 error_date: ''
             }]
         }];
+        $scope._counter = 0;
+        $scope.go = function(targetId){
+            if(targetId >= 0 && targetId < $scope.deviceList.length) {
+                $scope._counter = targetId;
+            }
+        };
 
         $scope.switchPower = function(device, group) {
             if(!Auth.isLoggedIn()) {

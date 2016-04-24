@@ -74,6 +74,51 @@ angular.module('infoSystemApp')
         },
 
         /**
+         * Create a function to open a accept confirmation modal (ex. ng-click='myModalFn(name, arg1, arg2...)')
+         * @param  {Function} acc - callback, ran when accept is confirmed
+         * @return {Function}     - the function to open the modal (ex. myModalFn)
+         */
+        accept: function(acc) {
+          acc = acc || angular.noop;
+
+          /**
+           * Open a accept confirmation modal
+           * @param  {String} name   - name or info to show on modal
+           * @param  {All}           - any additional args are passed straight to del callback
+           */
+          return function() {
+            var args = Array.prototype.slice.call(arguments),
+                arg = args.shift(),
+                acceptModal;
+
+            acceptModal = openModal({
+              modal: {
+                dismissable: true,
+                title: 'Confirm',
+                html: '<p>Are you sure you want <strong>' + arg + '</strong> this ?</p>',
+                buttons: [{
+                  classes: 'btn-success',
+                  text: 'OK',
+                  click: function(e) {
+                    acceptModal.close(e);
+                  }
+                }, {
+                  classes: 'btn-default',
+                  text: 'Cancel',
+                  click: function(e) {
+                    acceptModal.dismiss(e);
+                  }
+                }]
+              }
+            }, 'modal-off');
+
+            acceptModal.result.then(function(event) {
+              acc.apply(event, args);
+            });
+          };
+        },
+
+        /**
          * Create a function to open a delete confirmation modal (ex. ng-click='myModalFn(name, arg1, arg2...)')
          * @param  {Function} del - callback, ran when delete is confirmed
          * @return {Function}     - the function to open the modal (ex. myModalFn)
@@ -105,8 +150,6 @@ angular.module('infoSystemApp')
               if (deviceopt.service_code >= 0) {
                 modal_header = 'modal-warning'
               }
-              //else {modal_header = 'modal-info'}
-
               changeModal = openModal({
                 modal: {
                   dismissable: true,
