@@ -1,6 +1,5 @@
 <div class="col-md-12" ng-controller="TerminalCtrl" id="Terminal" style="margin-bottom: 1em">
     <div id="row{{$index}}" class="row" ng-repeat="(dindex,groupList) in deviceList track by $index" ng-show="$index == _counter">
-
         <div class="container-fluid col-sm-offset-2">
         <ul style="padding-left: 0px" class="icon-list-zaehler2" ng-repeat="deviceList in groupList">
             <li class="col-sm-3 col-xs-6" style="padding: 3px 3px 3px 3px"

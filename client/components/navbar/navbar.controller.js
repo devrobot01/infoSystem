@@ -18,6 +18,7 @@ angular.module('infoSystemApp')
         };
 
         $scope.shutdown = Modal.confirm.accept(function () {});
+        $scope.openLogin = Modal.confirm.login(function () {});
 
         $scope.isActive = function (route) {
             return route === $location.path();

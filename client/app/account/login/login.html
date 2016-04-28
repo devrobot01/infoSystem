@@ -1,46 +1,69 @@
-<div ng-include="'components/navbar/navbar.html'"></div>
-
-<div class="container">
+<div class="container" ng-controller="LoginCtrl">
   <div class="row">
-    <div class="col-sm-12">
+    <!-- <div class="col-sm-12">
       <h2>Login</h2>
       <p>Admin account is <code>admin</code> / <code>admin</code></p>
-    </div>
-    <div class="col-sm-12">
-      <form class="form" name="form" ng-submit="login(form)" novalidate>
+    </div> -->
 
+      <div class="col-sm-12">
+      <form class="form" name="form">
         <div class="form-group">
-          <label>User</label>
-
-          <input type="text" name="email" value="admin@admin.com" class="form-control" ng-model="user.email" required>
-        </div>
-
-        <div class="form-group">
-          <label>Password</label>
-
-          <input type="password" name="password" class="form-control" ng-model="user.password" required>
-        </div>
-
-        <div class="form-group has-error">
-          <p class="help-block" ng-show="form.email.$error.required && form.password.$error.required && submitted">
-             Please enter your email and password.
-          </p>
-          <p class="help-block" ng-show="form.email.$error.email && submitted">
-             Please enter a valid email.
-          </p>
-
           <p class="help-block">{{ errors.other }}</p>
+          <input class="field text-center" ng-value="user.password" ng-model="user.password" required>
         </div>
-
+        <div class="form-group">
+          <button class="numpad" ng-click="increaseVal('1')">1</button>
+          <button class="numpad" ng-click="increaseVal('2')">2</button>
+          <button class="numpad" ng-click="increaseVal('3')">3</button>
+        </div>
+        <div class="form-group">
+          <button class="numpad" ng-click="increaseVal('4')">4</button>
+          <button class="numpad" ng-click="increaseVal('5')">5</button>
+          <button class="numpad" ng-click="increaseVal('6')">6</button>
+        </div>
+        <div class="form-group">
+          <button class="numpad" ng-click="increaseVal('7')">7</button>
+          <button class="numpad" ng-click="increaseVal('8')">8</button>
+          <button class="numpad" ng-click="increaseVal('0')">9</button>
+        </div>
         <div>
-          <button class="btn btn-inverse btn-lg btn-login" type="submit">
-            Login
-          </button>
-          <a class="btn btn-default btn-lg btn-default" ng-href="/">Back</a>
+          <button class="numpad" ng-click="increaseVal('0')">0</button>
+          <button class="numpad" style="width: 15em" type="submit" ng-click="login(form)">Enter <div class="glyphicon glyphicon-log-in"></div></button>
+          <button class="numpad" style="width: 5em" ng-click="increaseVal('clear')">Clear</button>
         </div>
-
       </form>
     </div>
   </div>
-  <hr>
 </div>
+
+
+<!--
+<div class="form-group">
+  <label>User</label>
+
+  <input type="text" name="email" value="admin@admin.com" class="form-control" ng-model="user.email" required>
+</div>
+
+<div class="form-group">
+  <label>Password</label>
+
+  <input type="password" name="password" class="form-control" ng-model="user.password" required>
+</div>
+
+<div class="form-group has-error">
+  <p class="help-block" ng-show="form.email.$error.required && form.password.$error.required && submitted">
+     Please enter your email and password.
+  </p>
+  <p class="help-block" ng-show="form.email.$error.email && submitted">
+     Please enter a valid email.
+  </p>
+
+  <p class="help-block">{{ errors.other }}</p>
+</div>
+
+<div>
+  <button class="btn btn-inverse btn-lg btn-login" type="submit">
+    Login
+  </button>
+  <a class="btn btn-default btn-lg btn-default" ng-href="/">Back</a>
+</div> -->

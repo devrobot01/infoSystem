@@ -176,7 +176,46 @@ angular.module('infoSystemApp')
               });
             };
           }
-        }
+        },
+        login: function(login) {
+          login = login || angular.noop;
+
+          /**
+           * Open a delete confirmation modal
+           * @param  {String} name   - name or info to show on modal
+           * @param  {All}           - any additional args are passed straight to del callback
+           */
+          return function() {
+            var args = Array.prototype.slice.call(arguments),
+              log = args.shift(),
+              loginModal;
+
+            loginModal = openModal({
+              modal: {
+                dismissable: true,
+                title: 'Login',
+                showLogin: true,
+                buttons: [{
+                  classes: 'btn-success',
+                  text: 'Login',
+                  click: function(e) {
+                    loginModal.close(e);
+                  }
+                }, {
+                  classes: 'btn-default',
+                  text: 'Cancel',
+                  click: function(e) {
+                    loginModal.dismiss(e);
+                  }
+                }]
+              }
+            }, 'modal-off');
+
+            loginModal.result.then(function(event) {
+              login.apply(event, args);
+            });
+          };
+        },
       }
     };
   });

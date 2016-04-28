@@ -95,5 +95,8 @@ angular.module('infoSystemApp')
             }
         };
 
-        $scope.adminview = Modal.confirm.change(function (device) {});
+        if(Auth.isLoggedIn()) {
+            $scope.adminview = Modal.confirm.change(function (device) {});
+
+        }
     });

@@ -12,17 +12,18 @@
     <div collapse="isCollapsed" class="navbar-collapse collapse" id="navbar-main">
       <ul class="nav navbar-nav">
         <li ng-show="isLoggedIn()"><a style="color: #e53d11; font-size: 1.5em">Configuration Mode</a></li>
-        <li ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a href="/admin">Admin</a></li>
-        <li ng-show="isAdmin()" ng-class="{active: isActive('/')}"><a href="/">Terminal</a></li>
+        <!-- <li ng-show="isAdmin()" ng-class="{active: isActive('/admin')}"><a href="/admin">Admin</a></li> -->
+        <!-- <li ng-show="isAdmin()" ng-class="{active: isActive('/')}"><a href="/">Terminal</a></li> -->
       </ul>
 
       <ul class="nav navbar-nav navbar-right">
-        <li ng-show="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup">Sign up</a></li>
-        <li ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a href="/login">Login</a></li>
+        <!-- <li ng-show="isLoggedIn()" ng-class="{active: isActive('/signup')}"><a href="/signup">Sign up</a></li> -->
+        <!-- <li ng-hide="isLoggedIn()" ng-class="{active: isActive('/login')}"><a href="/login">Service</a></li> -->
+        <li ng-hide="isLoggedIn()"><a ng-click="openLogin('Login')" href="/">Service</a></li>
         <li ng-hide="isLoggedIn()"><a ng-click="shutdown('shutdown')" href="/"><span class="glyphicon glyphicon-off"></span></a></li>
-        <li ng-show="isLoggedIn()"><p class="navbar-text">Hello {{ getCurrentUser().name }}</p> </li>
-        <li ng-show="isLoggedIn()" class="dropdown" ng-class="{active: isActive('/settings')}"><a href="/settings"><span class="glyphicon glyphicon-cog"></span></a></li>
-        <li ng-show="isLoggedIn()" ng-class="{active: isActive('/logout')}"><a href="" ng-click="logout()">Logout</a></li>
+        <!-- <li ng-show="isLoggedIn()"><p class="navbar-text">Hello {{ getCurrentUser().name }}</p> </li> -->
+        <!-- <li ng-show="isLoggedIn()" class="dropdown" ng-class="{active: isActive('/settings')}"><a href="/settings"><span class="glyphicon glyphicon-cog"></span></a></li> -->
+        <li ng-show="isLoggedIn()" ng-class="{active: isActive('/logout')}"><a href="/" ng-click="logout()">Logout</a></li>
       </ul>
     </div>
   </div>
