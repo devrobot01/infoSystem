@@ -4,9 +4,9 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
 var SerialportSchema = new Schema({
-  name: String,
-  info: String,
-  active: Boolean
+  modul: String,
+  type: String,
+  value: Array
 });
 
 module.exports = mongoose.model('Serialport', SerialportSchema);

@@ -18,10 +18,17 @@ var response = {
   BCC:''  // Checksumme 20
 };
 
+var serialportsList;
+
+function loadList() {
+  Serialport.find(function (err, serialports) {
+    if (err) { return handleError(res, err); }
+    return serialportsList = serialports.slice(0);
+  });
+}
 
 (function (){
-
-
+  loadList();
   port.open(function (err) {
     if (err) {
       return console.log('Error opening port: ', err.message);
@@ -33,40 +40,75 @@ var response = {
         port.write(new Buffer([0x02, module[modul], 0x01, 0x00, 0x00, 0x05]));
       }
     }
+
     getZaehlerstand(module);*/
-    port.write(new Buffer([0x02, 0x01, 0x01, 0x00, 0x00, 0x05]));
+    setInterval(function(){
+      console.log('ask for count');
+      port.write(new Buffer([0x02, 0x01, 0x01, 0x00, 0x00, 0x05]));
+      var dataArray = [];
+
+      port.on('data', function(data) {
+        //console.log('data received: ' + data.toString('hex'));
+        var stringData = data.toString('hex');
+        /*
+         * var jsonData ist ein array also kann mit jsonData[0] auf die verschiedenen values zugegriffen werden.
+         */
+        var jsonData = stringData.match(/.{1,2}/g);
+        //console.log('jsonData: ' + jsonData);
+
+        var key, count = 0;
+        for(key in jsonData) {
+          if(jsonData.hasOwnProperty(key)) {
+            dataArray.push(jsonData[count]);
+            count++;
+          }
+        }
+        //console.log('count: ' + count);
+        // console.log(response);
+
+        if(dataArray[11] != null && dataArray[12] == null) {
+          //console.log('Data: ' + dataArray);
+          var newThing = {};
+          newThing.modul = dataArray[1];
+          newThing.type = dataArray[3];
+          newThing.value = dataArray;
+          var res;
+
+          loadList();
+          var _modul = false;
+          for(key in serialportsList) {
+            console.log(serialportsList[key].modul);
+            if (serialportsList[key].modul == newThing.modul){
+              Serialport.findById(serialportsList[key]._id, function (err, serialport) {
+                if (err) { return handleError(res, err); }
+                var updated = _.merge(serialport, newThing);
+                updated.save(function (err) {
+                  if (err) { return handleError(res, err); }
+                  return serialport;
+                });
+              });
+              return _modul = serialportsList[key].modul;
+            }
+          }
+          //console.log(_modul);
+          //console.log(serialportsList);
+          if(_modul == false) {
+            /*Serialport.create(newThing, function(err, serialport) {
+             if(err) { return handleError(res, err); }
+             return null;
+             });*/
+            console.log('create: ');
+          }
+        }
+      });
+      return;
+    }, 5 * 1 * 1000); // sec * min * faktor
+
 
   });
-  var i = 1;
-  if(i <= 9){
 
-  }
-  port.on('data', function(data) {
-    console.log('data received: ' + data.toString('hex'));
-    var stringData = data.toString('hex');
-    /*for (var key in data.keys()) {
-      console.log(key);
-    }*/
-    console.log(stringData.match(/.{1,2}/g));
-    var testJson = stringData.match(/.{1,2}/g);
-    console.log('testJson: ' + testJson);
-    var string = JSON.stringify(data);
-    var json = JSON.parse(string);
-    console.log('json: ' + json.data);
-    //console.log('data: ' + data[0]);
-    /*for(var key in json.data) {
-      console.log('key: ' + key);
-      response[i] = data[0];
-    }*/
-    var key, count = 0;
-    for(key in json[1]) {
-      if(json[1].hasOwnProperty(key)) {
-        count++;
-      }
-    }
-    console.log('count: ' + count);
-    // console.log(response);
-  });
+
+
 
 
   /*port.open(function (err) {

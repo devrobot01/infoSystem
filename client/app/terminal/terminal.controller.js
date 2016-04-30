@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-    .controller('TerminalCtrl', function ($scope, Modal, Auth) {
+    .controller('TerminalCtrl', function ($scope, Modal, Auth, socket, $http) {
 
         $scope.icon = {
             uv: {
@@ -11,6 +11,18 @@ angular.module('infoSystemApp')
                 270: "images/pictos/ic_arrow_forward_24px.svg",
                 360: "images/pictos/ic_vertical_align_bottom_24px.svg"
         };
+
+        //var socket = io.connect('localhost:9000');
+
+       /*socket.on('count', function (data) {
+            console.log(data);
+        });*/
+
+        $http.get('/api/serialports').success(function(awesomeThings) {
+            $scope.awesomeThings = awesomeThings;
+            socket.syncUpdates('serialport', $scope.awesomeThings);
+            console.log($scope.awesomeThings);
+        });
 
         $scope.deviceList = [{
             group:[
@@ -97,6 +109,10 @@ angular.module('infoSystemApp')
 
         if(Auth.isLoggedIn()) {
             $scope.adminview = Modal.confirm.change(function (device) {});
+
+        }
+        if(!Auth.isLoggedIn()) {
+            $scope.errorview = Modal.confirm.error(function (device) {});
 
         }
     });

@@ -1,6 +1,11 @@
 'use strict';
 
 var express = require('express');
+var app = require('../../app');
+var server = app.server;
+var io = require('socket.io').listen(server);
+module.exports.socket = io;
+
 var controller = require('./serialport.controller');
 
 var router = express.Router();

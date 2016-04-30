@@ -187,13 +187,14 @@ angular.module('infoSystemApp')
            */
           return function() {
             var args = Array.prototype.slice.call(arguments),
-              log = args.shift(),
+              name = args.shift(),
               loginModal;
 
             loginModal = openModal({
               modal: {
                 dismissable: true,
                 title: 'Login',
+                html: "<div ng-include='/app/account/login/login.html'></div>",
                 showLogin: true,
                 buttons: [{
                   classes: 'btn-success',
@@ -209,10 +210,43 @@ angular.module('infoSystemApp')
                   }
                 }]
               }
-            }, 'modal-off');
+            }, 'modal-danger');
 
             loginModal.result.then(function(event) {
               login.apply(event, args);
+            });
+          };
+        },
+        error: function(error) {
+          error = error || angular.noop;
+
+          /**
+           * Open a delete confirmation modal
+           * @param  {String} name   - name or info to show on modal
+           * @param  {All}           - any additional args are passed straight to del callback
+           */
+          return function() {
+            var args = Array.prototype.slice.call(arguments),
+              error = args.shift(),
+              errorModal;
+
+            errorModal = openModal({
+              modal: {
+                dismissable: true,
+                title: 'Login',
+                errorview: true,
+                buttons: [{
+                  classes: 'btn-default',
+                  text: 'OK',
+                  click: function(e) {
+                    errorModal.dismiss(e);
+                  }
+                }]
+              }
+            }, 'modal-danger');
+
+            errorModal.result.then(function(event) {
+              error.apply(event, args);
             });
           };
         },
