@@ -83,7 +83,6 @@ angular.module('infoSystemApp')
                     $scope.deviceList[_modul].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];
                 }
                 if ($scope.awesomeThings[key].value[3] == '01') {
-
                     if (angular.isUndefined($scope.deviceList[key])) { $scope.addGroup(); }
                     //hex stundenzahl in int wandeln
                     $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];

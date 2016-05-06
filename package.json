@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "main": "server/app.js",
   "dependencies": {
+    "bitwise-xor": "0.0.0",
     "body-parser": "~1.5.0",
     "composable-middleware": "^0.3.0",
     "compression": "~1.0.1",
@@ -24,8 +25,7 @@
     "serve-favicon": "~2.0.1",
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
-    "socketio-jwt": "^3.0.0",
-    "sleep":"."
+    "socketio-jwt": "^3.0.0"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
