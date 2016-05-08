@@ -10,7 +10,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: -1,
           service_date: '',
-          error_code: -1,
+          error_code: [1,2],
           error_date: '',
           power_is: '',
           power_should: '',
@@ -41,6 +41,7 @@ angular.module('infoSystemApp')
     $scope.deviceList = [];
     $scope.addGroup();
     $scope.awesomeThings = {};
+    $scope.isLoggedIn = Auth.isLoggedIn;
 
     $http.get('/api/serialports').success(function (awesomeThings) {
       $scope.awesomeThings = awesomeThings;
@@ -174,14 +175,7 @@ angular.module('infoSystemApp')
       }
     };
 
-    if (Auth.isLoggedIn()) {
-      $scope.adminview = Modal.confirm.change(function (device) {
-      });
+    $scope.adminview = Modal.confirm.change(function (device) {});
 
-    }
-    if (!Auth.isLoggedIn()) {
-      $scope.errorview = Modal.confirm.error(function (device) {
-      });
-
-    }
+    $scope.errorview = Modal.confirm.error(function (device) {})
   });

@@ -187,7 +187,7 @@ angular.module('infoSystemApp')
            */
           return function() {
             var args = Array.prototype.slice.call(arguments),
-              name = args.shift(),
+              arg = args.shift(),
               loginModal;
 
             loginModal = openModal({
@@ -227,13 +227,14 @@ angular.module('infoSystemApp')
            */
           return function() {
             var args = Array.prototype.slice.call(arguments),
-              error = args.shift(),
+              arg = args.shift(),
               errorModal;
 
             errorModal = openModal({
               modal: {
                 dismissable: true,
-                title: 'Login',
+                title: 'Alarme',
+                arg : arg,
                 errorview: true,
                 buttons: [{
                   classes: 'btn-default',
