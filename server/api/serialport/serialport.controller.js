@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var xor = require('bitwise-xor');
 var Serialport = require('./serialport.model');
 var module = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
 var SerialPort = require('serialport').SerialPort;
@@ -74,7 +75,7 @@ var dataArray = [];
         modul = 0;
         //clearInterval(refreshIntervalId); // stoppt das Interfal
       }
-    }, 5 * 1 * 1000); // sec * min * faktor*/
+    }, 50 * 1 * 1000); // sec * min * faktor*/
   });
 
 
@@ -154,6 +155,30 @@ var dataArray = [];
     }
   });
 })();
+
+exports.updateVal = function (req, res) {
+  // TODO: XOR aller buffer vals und dann kommando abschicken
+  var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x01, 0x01, 0x03, 0x00]);
+  console.log('Value ' + buffer.toString('hex'));
+  buffer.toJSON();
+  var value = buffer.slice(0);
+  for(var val = 1; val < buffer.length-1; val ++){
+    console.log('Value ' + value[val] + ' Value2 ' + buffer[val+1]);
+    value[val] = xor(new Buffer(0x0 + value[val]), new Buffer(0x0 + buffer[val+1]));
+    console.log('Value after:' + value.toString('hex'));
+  }/*
+   buffer[buffer.length] = value[value.length-1]; // XOR auf den letzten Platz im Buffer setzen
+   port.open(function (err) {
+   Console.log('############ Write Buffer to Modul #########');
+   port.write(buffer);
+   });*/
+  /*
+   port.on('data', function (data) {
+   Console.log('Received Data: ' + data);
+   });*/
+
+  //return res.status(201).json(data);
+};
 
 // Get list of serialports
 exports.index = function (req, res) {
