@@ -198,19 +198,13 @@ angular.module('infoSystemApp')
                 showLogin: true,
                 buttons: [{
                   classes: 'btn-success',
-                  text: 'Login',
+                  text: 'Close',
                   click: function(e) {
                     loginModal.close(e);
                   }
-                }, {
-                  classes: 'btn-default',
-                  text: 'Cancel',
-                  click: function(e) {
-                    loginModal.dismiss(e);
-                  }
                 }]
               }
-            }, 'modal-danger');
+            }, 'modal-off');
 
             loginModal.result.then(function(event) {
               login.apply(event, args);

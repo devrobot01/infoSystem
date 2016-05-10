@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .controller('LoginCtrl', function ($scope, Auth, $location) {
+  .controller('LoginCtrl', function ($scope, Auth, $location, Modal) {
     $scope.user = {};
     $scope.errors = {};
     $scope.user.password = "";
