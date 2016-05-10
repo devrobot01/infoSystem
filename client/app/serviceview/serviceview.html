@@ -1,3 +1,41 @@
-<div class="col-md-12">
-This is the serviceview view.
+<div class="col-md-12" ng-controller="ServiceviewCtrl">
+    <div ng-show="refresh" class="alert alert-info" role="alert">
+        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Einen Moment neue Werte werden Geladen
+        <div class="progress">
+            <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{percent}}"
+                 aria-valuemin="0" aria-valuemax="100" style="width: 100%;">
+                {{percent}}
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Lampenstrom einmessen</button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Betriebsstunden zurücksetzen</button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Lampenstrom Istwert <span class="badge"> 4.3 A</span></button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Lampenstrom Sollwert <span class="badge"> 4.5 A</span></button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Eingänge testen</button>
+
+    <div class="panel panel-default" style="margin-top: 0.5em">
+        <div class="panel-heading">Schaltverhalten Error Relais</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-5">Bei Fehler Relais </div>
+                <div class="col-sm-6">
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-default">
+                            <input type="radio" id="q156" name="quality[25]" value="1" /> On
+                        </label>
+                        <label class="btn btn-default active">
+                            <input type="radio" id="q160" name="quality[25]" checked="checked" value="5" /> Off
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Meldung der Steuertung</div>
+        <div class="panel-body"><input type="text"></div>
+    </div>
+
 </div>

@@ -153,8 +153,8 @@ angular.module('infoSystemApp')
               changeModal = openModal({
                 modal: {
                   dismissable: true,
-                  title: 'Change Settings',
-                  html: '<p>Reset lamp meter ?</p>',
+                  title: 'Service Einstellungen',
+                  serviceview: true,
                   buttons: [{
                     classes: 'btn-primary',
                     text: 'OK',
