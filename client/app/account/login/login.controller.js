@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .controller('LoginCtrl', function ($scope, Auth, $location, Modal) {
+  .controller('LoginCtrl', function ($scope, Auth, $location) {
     $scope.user = {};
     $scope.errors = {};
     $scope.user.password = "";
+    $scope.isLoggedIn = Auth.isLoggedIn;
 
     $scope.increaseVal = function(val){
       if(val == 'clear'){

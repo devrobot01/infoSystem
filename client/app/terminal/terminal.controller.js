@@ -175,7 +175,10 @@ angular.module('infoSystemApp')
       }
     };
 
-    $scope.adminview = Modal.confirm.change(function (device) {});
+    $scope.setadminview = function () {
+      console.log("test");
+    }
+    $scope.adminview = Modal.confirm.service(function (device) {console.log("lksajdfölsajfösa")});
 
     $scope.errorview = Modal.confirm.error(function (device) {})
   });

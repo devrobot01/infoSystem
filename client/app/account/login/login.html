@@ -1,5 +1,5 @@
 <div class="container" ng-controller="LoginCtrl">
-  <div class="row">
+  <div class="row" ng-hide="isLoggedIn()">
     <!-- <div class="col-sm-12">
       <h2>Login</h2>
       <p>Admin account is <code>admin</code> / <code>admin</code></p>
@@ -34,6 +34,7 @@
       </form>
     </div>
   </div>
+  <div ng-show="isLoggedIn()"><h2>Login erfolgreich</h2></div>
 </div>
 
 

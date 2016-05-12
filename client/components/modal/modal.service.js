@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .factory('Modal', function ($rootScope, $modal, Auth) {
+  .factory('Modal', function ($rootScope, $modal) {
     /**
      * Opens a modal
      * @param  {Object} scope      - an object to be merged with modal's scope
@@ -91,6 +91,12 @@ angular.module('infoSystemApp')
                 arg = args.shift(),
                 acceptModal;
 
+                var modalClass;
+                if (arg.power == true) { modalClass = 'modal-success' }
+                if (arg.power != true) { modalClass = 'modal-off' }
+                if (arg.error_code >= 0) { modalClass = 'modal-danger' }
+                if (arg.service_code >= 0) { modalClass = 'modal-warning' }
+
             acceptModal = openModal({
               modal: {
                 dismissable: true,
@@ -110,7 +116,7 @@ angular.module('infoSystemApp')
                   }
                 }]
               }
-            }, 'modal-off');
+            }, modalClass);
 
             acceptModal.result.then(function(event) {
               acc.apply(event, args);
@@ -118,65 +124,40 @@ angular.module('infoSystemApp')
           };
         },
 
-        /**
-         * Create a function to open a delete confirmation modal (ex. ng-click='myModalFn(name, arg1, arg2...)')
-         * @param  {Function} del - callback, ran when delete is confirmed
-         * @return {Function}     - the function to open the modal (ex. myModalFn)
-         */
-        change: function(device) {
-          if (Auth.isLoggedIn()) {
-            device = device || angular.noop;
+        service: function(service) {
+          service = service || angular.noop;
 
-            /**
-             * Open a delete confirmation modal
-             * @param  {String} name   - name or info to show on modal
-             * @param  {All}           - any additional args are passed straight to del callback
-             */
-            return function () {
-              var args = Array.prototype.slice.call(arguments),
-                  deviceopt = args.shift(),
-                  changeModal;
+          /**
+           * Open a delete confirmation modal
+           * @param  {String} name   - name or info to show on modal
+           * @param  {All}           - any additional args are passed straight to del callback
+           */
+          return function() {
+            var args = Array.prototype.slice.call(arguments),
+              arg = args.shift(),
+              serviceModal;
 
-              var modal_header;
-              if (deviceopt.power == true) {
-                modal_header = 'modal-success'
+            serviceModal = openModal({
+              modal: {
+                dismissable: true,
+                serviceview: true,
+                title: 'Service Einstellungen',
+                buttons: [{
+                  classes: 'btn-default',
+                  text: 'OK',
+                  click: function(e) {
+                    serviceModal.dismiss(e);
+                  }
+                }]
               }
-              if (deviceopt.power != true) {
-                modal_header = 'modal-off'
-              }
-              if (deviceopt.error_code >= 0) {
-                modal_header = 'modal-danger'
-              }
-              if (deviceopt.service_code >= 0) {
-                modal_header = 'modal-warning'
-              }
-              changeModal = openModal({
-                modal: {
-                  dismissable: true,
-                  title: 'Service Einstellungen',
-                  serviceview: true,
-                  buttons: [{
-                    classes: 'btn-primary',
-                    text: 'OK',
-                    click: function (e) {
-                      changeModal.close(e);
-                    }
-                  }, {
-                    classes: 'btn-default',
-                    text: 'Cancel',
-                    click: function (e) {
-                      changeModal.dismiss(e);
-                    }
-                  }]
-                }
-              }, modal_header);
+            }, 'modal-off');
 
-              changeModal.result.then(function (event) {
-                device.apply(event, args);
-              });
-            };
-          }
+            serviceModal.result.then(function(event) {
+              service.apply(event, args);
+            });
+          };
         },
+
         login: function(login) {
           login = login || angular.noop;
 
