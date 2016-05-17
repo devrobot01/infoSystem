@@ -1,21 +1,22 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .factory('User', function ($resource) {
-    return $resource('/api/users/:id/:controller', {
+  .service('Sent', function ($resource) {
+    return $resource('/api/serialports/:id', {
         id: '@_id'
       },
       {
-        changePassword: {
+        sentVal: {
           method: 'PUT',
           params: {
-            controller: 'password'
+            //controller:'sent'
+            id: '01'
           }
         },
         get: {
           method: 'GET',
           params: {
-            id: 'me'
+            id:'me'
           }
         }
       });

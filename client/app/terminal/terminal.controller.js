@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .controller('TerminalCtrl', function ($scope, Modal, Auth, socket, $http) {
+  .controller('TerminalCtrl', function ($scope, Modal, Auth, socket, $http, Sent) {
     $scope.addGroup = function () {
       var group = {
         group: [{
@@ -151,6 +151,10 @@ angular.module('infoSystemApp')
       if (targetId >= 0 && targetId < $scope.deviceList.length) {
         $scope._counter = targetId;
       }
+    };
+
+    $scope.lampenstromEinmessen = function() {
+      Sent.sentVal({ id: '01' });
     };
 
     $scope.switchPower = function (device, group) {

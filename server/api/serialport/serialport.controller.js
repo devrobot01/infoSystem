@@ -97,14 +97,35 @@ var dataArray = [];
         count++;
       }
     }
+    if (dataArray[0] !== '02'){
+      console.log('einzelnes kommando');
+      console.log(dataArray[0]);
+      //port.write( new Buffer(0x03));
+
+      if(dataArray[0] === '06'){
+       port.write( new Buffer('05', 'hex'));
+       console.log(new Buffer('05', 'hex').toString('hex'));
+        /*var i = 0;
+        var refreshIntervalId = setInterval(function () {
+          if(i >= 1) {
+            console.log('Write 05');
+            port.write( new Buffer(0x05));
+            port.write( new Buffer(0x03));
+            port.write( new Buffer(0x05));
+            clearInterval(refreshIntervalId);
+          }i++
+        }, 300);*/
+      }
+      dataArray.splice(0, dataArray.length);
+    }
     if (dataArray[parseInt(dataArray[2])] !== undefined) {
       //console.log('count: ' + count);
       //console.log('Dataarray: ' + (parseInt(dataArray[2])));
-      console.log('Dataarray +5 : ' + (parseInt(dataArray[2]) + 5));
+      //console.log('Dataarray +5 : ' + (parseInt(dataArray[2]) + 5));
       //console.log('Dataarray: ' + dataArray[parseInt(dataArray[2])+5]);
       console.log('Dataarraylen: ' + dataArray);
       if (dataArray[parseInt(dataArray[2]) + 5] !== undefined) {
-        console.log('############# True #############');
+        //console.log('############# True #############');
         //dataArray.splice(0,dataArray.length);
       }
       if (dataArray[parseInt(dataArray[2]) + 5] !== undefined) {
@@ -116,28 +137,30 @@ var dataArray = [];
         newThing.value = {};
         newThing.value = dataArray.slice(0); // Copy the Array
         var res;
-        dataArray.splice(0, dataArray.length);
+        dataArray.splice(0, dataArray.length); // empty array
         loadSerialportsList();
-        //console.log('serialportsList ' + serialportsList);
-        var _modul = false;
-        for (key in serialportsList) {
-          //console.log('newThing Modul: ' + newThing.modul + ' ' + 'Modul :' + serialportsList[key].modul);
-          //console.log('SerialPort: ' + serialportsList[key].modul);
-          if (serialportsList[key].modul == newThing.modul && serialportsList[key].type == newThing.type) {
-            Serialport.findById(serialportsList[key]._id, function (err, serialport) {
-              //console.log('findById: ');
-              if (err) {
-                return handleError(res, err);
-              }
-              var updated = _.merge(serialport, newThing);
-              updated.save(function (err) {
+        if(newThing.value[0] === '02') {
+          //console.log('serialportsList ' + serialportsList);
+          var _modul = false;
+          for (key in serialportsList) {
+            //console.log('newThing Modul: ' + newThing.modul + ' ' + 'Modul :' + serialportsList[key].modul);
+            //console.log('SerialPort: ' + serialportsList[key].modul);
+            if (serialportsList[key].modul == newThing.modul && serialportsList[key].type == newThing.type) {
+              Serialport.findById(serialportsList[key]._id, function (err, serialport) {
+                //console.log('findById: ');
                 if (err) {
                   return handleError(res, err);
                 }
-                return serialport;
+                var updated = _.merge(serialport, newThing);
+                updated.save(function (err) {
+                  if (err) {
+                    return handleError(res, err);
+                  }
+                  return serialport;
+                });
               });
-            });
-            return _modul = serialportsList[key].modul;
+              return _modul = serialportsList[key].modul;
+            }
           }
         }
         //console.log(_modul);
@@ -156,9 +179,9 @@ var dataArray = [];
   });
 })();
 
-exports.updateVal = function (req, res) {
+exports.xorBuffer = function (buffer) {
   // TODO: XOR aller buffer vals und dann kommando abschicken
-  var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x01, 0x01, 0x03, 0x00]);
+  //var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00]);
   console.log('Value ' + buffer.toString('hex'));
   buffer.toJSON();
   var value = buffer.slice(0);
@@ -178,6 +201,65 @@ exports.updateVal = function (req, res) {
    });*/
 
   //return res.status(201).json(data);
+};
+
+// Creates a new serialport in the DB.
+exports.sent = function (req, res) {
+  console.log(req.body);
+  console.log(req.body.id);
+
+  var xorBuffer = function (buffer) {
+    // TODO: XOR aller buffer vals und dann kommando abschicken
+    //var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00]);
+    console.log('Value befor: ' + buffer.toString('hex'));
+    buffer.toJSON();
+    var value = buffer.slice(0);
+    var xorVar = new Buffer('0' + value[1], 'hex');
+    console.log('Init: ' + xorVar.toString('hex'));
+    for (var val = 1; val < buffer.length - 2; val++) {
+      console.log('xorVar ' + xorVar.toString('hex') + ' Value ' + value[val + 1]);
+      xorVar = xor(new Buffer(xorVar), new Buffer('0' + value[val + 1], 'hex'));
+      console.log('xorVar after: ' + xorVar.toString('hex'));
+    }
+    console.log('Value after: ' + value.toString('hex'));
+    console.log('Value length: ' + value.length);
+    value[value.length-1] = xorVar.toString('hex');
+    console.log('Value after: ' + value.toString('hex'));
+    return buffer;
+  };
+
+  if(req.body.id === '01') {
+    console.log('lampenstrom wird eingemessen');
+    var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x01]);
+    xorBuffer(buffer);
+    //port.write(buffer);
+
+  }
+  if(req.body.id === '02') {
+    console.log('');
+    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
+  }
+
+  if(req.body.id === '03') {
+    console.log('');
+    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
+  }
+
+  if(req.body.id === '04') {
+    console.log('');
+    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
+  }
+
+  if(req.body.id === '05') {
+    console.log('');
+    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
+  }
+
+  if(req.body.id === '06') {
+    console.log('');
+    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
+  }
+  return res.status(201).json();
 };
 
 // Get list of serialports
@@ -205,12 +287,12 @@ exports.show = function (req, res) {
 
 // Creates a new serialport in the DB.
 exports.create = function (req, res) {
-  Serialport.create(req.body, function (err, serialport) {
+  /*Serialport.create(req.body, function (err, serialport) {
     if (err) {
       return handleError(res, err);
-    }
-    return res.status(201).json(serialport);
-  });
+    }*/
+  return res.status(201).json();
+  //);
 };
 
 // Updates an existing serialport in the DB.
