@@ -136,12 +136,13 @@ angular.module('infoSystemApp')
             var args = Array.prototype.slice.call(arguments),
               arg = args.shift(),
               serviceModal;
-
+              console.log(arg);
             serviceModal = openModal({
               modal: {
                 dismissable: true,
                 serviceview: true,
                 title: 'Service Einstellungen',
+                arg: arg,
                 buttons: [{
                   classes: 'btn-default',
                   text: 'OK',
