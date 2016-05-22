@@ -12,8 +12,8 @@ angular.module('infoSystemApp')
           service_date: '',
           error_code: [1,2],
           error_date: '',
-          power_is: '',
-          power_should: '',
+          ampere_is: '',
+          ampere_target: '',
         }, {
           power: false,
           uv: false,
@@ -22,8 +22,8 @@ angular.module('infoSystemApp')
           service_date: '',
           error_code: -1,
           error_date: '',
-          power_is: '',
-          power_should: '',
+          ampere_is: '',
+          ampere_target: '',
         }, {
           power: false,
           uv: false,
@@ -32,8 +32,8 @@ angular.module('infoSystemApp')
           service_date: '',
           error_code: -1,
           error_date: '',
-          power_is: '',
-          power_should: '',
+          ampere_is: '',
+          ampere_target: '',
         }]
       };
       $scope.deviceList.push(group);
@@ -72,29 +72,49 @@ angular.module('infoSystemApp')
           if (angular.isUndefined($scope.deviceList[_modul])) {
             $scope.addGroup();
           }
-          $scope.deviceList[_modul].group[0].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[5]); // To convert back to hex, you can use toString num.toString(16)
-          $scope.deviceList[_modul].group[1].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[7]);
-          $scope.deviceList[_modul].group[2].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[9]);
+          var values = $scope.awesomeThings[key].value[5];
+          values += $scope.awesomeThings[key].value[4];
+          //$scope.deviceList[_modul].group[0].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[5]); // To convert back to hex, you can use toString num.toString(16)
+          $scope.deviceList[_modul].group[0].powerOn_hours = 9999 - parseInt(values,16); // To convert back to hex, you can use toString num.toString(16)
+          values = $scope.awesomeThings[key].value[7];
+          values += $scope.awesomeThings[key].value[6];
+          $scope.deviceList[_modul].group[1].powerOn_hours = 9999 - parseInt(values,16);
+          values = $scope.awesomeThings[key].value[9];
+          values += $scope.awesomeThings[key].value[8];
+          $scope.deviceList[_modul].group[2].powerOn_hours = 9999 - parseInt(values,16);
         }
         // 01 = Strom ist Werte
         if ($scope.awesomeThings[key].value[3] == '01') {
-          /*if (angular.isUndefined($scope.deviceList[key])) {
-           $scope.addGroup();
+          if (angular.isUndefined($scope.deviceList[_modul])) {
+           console.log("Missing Group");
            }
            //hex stundenzahl in int wandeln
-           $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];
-           $scope.deviceList[key].group[1].powerOn_hours = $scope.awesomeThings[key].value[7];
-           $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
+          var values = $scope.awesomeThings[key].value[5];
+          values += $scope.awesomeThings[key].value[4];
+          //$scope.deviceList[_modul].group[0].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[5]); // To convert back to hex, you can use toString num.toString(16)
+          $scope.deviceList[_modul].group[0].ampere_is = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
+          values = $scope.awesomeThings[key].value[7];
+          values += $scope.awesomeThings[key].value[6];
+          $scope.deviceList[_modul].group[1].ampere_is = parseInt(values,16)/100;
+          values = $scope.awesomeThings[key].value[9];
+          values += $scope.awesomeThings[key].value[8];
+          $scope.deviceList[_modul].group[2].ampere_is = parseInt(values,16)/100;
         }
         // 02 = Strom soll Wert
         if ($scope.awesomeThings[key].value[3] == '02') {
-          /*if (angular.isUndefined($scope.deviceList[key])) {
-           $scope.addGroup();
-           }
-           //hex stundenzahl in int wandeln
-           $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];
-           $scope.deviceList[key].group[1].powerOn_hours = $scope.awesomeThings[key].value[7];
-           $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
+          if (angular.isUndefined($scope.deviceList[_modul])) {
+            console.log("Missing Group");
+          }
+          //hex stundenzahl in int wandeln
+          var values = $scope.awesomeThings[key].value[5];
+          values += $scope.awesomeThings[key].value[4];
+          $scope.deviceList[_modul].group[0].ampere_target = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
+          values = $scope.awesomeThings[key].value[7];
+          values += $scope.awesomeThings[key].value[6];
+          $scope.deviceList[_modul].group[1].ampere_target = parseInt(values,16)/100;
+          values = $scope.awesomeThings[key].value[9];
+          values += $scope.awesomeThings[key].value[8];
+          $scope.deviceList[_modul].group[2].ampere_target = parseInt(values,16)/100;
         }
         if ($scope.awesomeThings[key].value[3] == '03') {
           /*if (angular.isUndefined($scope.deviceList[key])) {
@@ -154,7 +174,7 @@ angular.module('infoSystemApp')
     };
 
     $scope.lampenstromEinmessen = function() {
-      Sent.sentVal({ id: '01' });
+      Sent.sentVal({ type: '1' });
     };
 
     $scope.switchPower = function (device, group) {

@@ -3,7 +3,6 @@
 var _ = require('lodash');
 var xor = require('bitwise-xor');
 var Serialport = require('./serialport.model');
-var module = [0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
 var SerialPort = require('serialport').SerialPort;
 var port = new SerialPort("/dev/ttyUSB0", {
   baudrate: 9600,
@@ -17,19 +16,11 @@ var port = new SerialPort("/dev/ttyUSB0", {
   bufferSize: 512
 }, false);
 
-var response = {
-  STX: '', // Start Zeichen 02
-  ADR: '', // Modul Adresse 01
-  LEN: '', // Anzahl Datenbytes 06
-  TYP: '', // Daten Typ 00
-  DAT1: '',// Datenbyte 1 0427
-  DAT2: '',// Datenbyte 2 0427
-  DAT3: '',// Datenbyte 3 0327
-  ETX: '', // Ende Zeichen 03
-  BCC: ''  // Checksumme 20
-};
-
 var serialportsList;
+
+function waitForDevice(callback) {
+  setTimeout(callback, 3);
+}
 
 function loadSerialportsList() {
   Serialport.find(function (err, serialports) {
@@ -75,7 +66,7 @@ var dataArray = [];
         modul = 0;
         //clearInterval(refreshIntervalId); // stoppt das Interfal
       }
-    }, 50 * 1 * 1000); // sec * min * faktor*/
+    }, 5 * 1 * 1000); // sec * min * faktor*/
   });
 
 
@@ -103,18 +94,22 @@ var dataArray = [];
       //port.write( new Buffer(0x03));
 
       if(dataArray[0] === '06'){
-       port.write( new Buffer('05', 'hex'));
-       console.log(new Buffer('05', 'hex').toString('hex'));
+        waitForDevice(function() {
+          port.write( new Buffer('05', 'hex'));
+          console.log(new Buffer('05', 'hex').toString('hex'));
+        });
+
         /*var i = 0;
         var refreshIntervalId = setInterval(function () {
+          console.log('i' + i);
           if(i >= 1) {
             console.log('Write 05');
             port.write( new Buffer(0x05));
-            port.write( new Buffer(0x03));
-            port.write( new Buffer(0x05));
+            //port.write( new Buffer(0x03));
+            //port.write( new Buffer(0x05));
             clearInterval(refreshIntervalId);
           }i++
-        }, 300);*/
+        }, 30);*/
       }
       dataArray.splice(0, dataArray.length);
     }
@@ -179,34 +174,11 @@ var dataArray = [];
   });
 })();
 
-exports.xorBuffer = function (buffer) {
-  // TODO: XOR aller buffer vals und dann kommando abschicken
-  //var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00]);
-  console.log('Value ' + buffer.toString('hex'));
-  buffer.toJSON();
-  var value = buffer.slice(0);
-  for(var val = 1; val < buffer.length-1; val ++){
-    console.log('Value ' + value[val] + ' Value2 ' + buffer[val+1]);
-    value[val] = xor(new Buffer(0x0 + value[val]), new Buffer(0x0 + buffer[val+1]));
-    console.log('Value after:' + value.toString('hex'));
-  }/*
-   buffer[buffer.length] = value[value.length-1]; // XOR auf den letzten Platz im Buffer setzen
-   port.open(function (err) {
-   Console.log('############ Write Buffer to Modul #########');
-   port.write(buffer);
-   });*/
-  /*
-   port.on('data', function (data) {
-   Console.log('Received Data: ' + data);
-   });*/
-
-  //return res.status(201).json(data);
-};
-
 // Creates a new serialport in the DB.
 exports.sent = function (req, res) {
   console.log(req.body);
-  console.log(req.body.id);
+  console.log(req.body.type);
+  console.log(req.body.modul);
 
   var xorBuffer = function (buffer) {
     // TODO: XOR aller buffer vals und dann kommando abschicken
@@ -215,50 +187,21 @@ exports.sent = function (req, res) {
     buffer.toJSON();
     var value = buffer.slice(0);
     var xorVar = new Buffer('0' + value[1], 'hex');
-    console.log('Init: ' + xorVar.toString('hex'));
     for (var val = 1; val < buffer.length - 2; val++) {
-      console.log('xorVar ' + xorVar.toString('hex') + ' Value ' + value[val + 1]);
       xorVar = xor(new Buffer(xorVar), new Buffer('0' + value[val + 1], 'hex'));
-      console.log('xorVar after: ' + xorVar.toString('hex'));
     }
-    console.log('Value after: ' + value.toString('hex'));
-    console.log('Value length: ' + value.length);
     value[value.length-1] = xorVar.toString('hex');
     console.log('Value after: ' + value.toString('hex'));
+    buffer = new Buffer(value, 'hex');
+    console.log('Buffer: ' + buffer.toString('hex'));
     return buffer;
   };
 
-  if(req.body.id === '01') {
-    console.log('lampenstrom wird eingemessen');
-    var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x01]);
-    xorBuffer(buffer);
-    //port.write(buffer);
+  console.log('lampenstrom wird eingemessen');
+  var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x0 + req.body.type, 0x03, 0x01, 0x03, 0x03]);
+  xorBuffer(buffer);
+  port.write(xorBuffer(buffer));
 
-  }
-  if(req.body.id === '02') {
-    console.log('');
-    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
-  }
-
-  if(req.body.id === '03') {
-    console.log('');
-    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
-  }
-
-  if(req.body.id === '04') {
-    console.log('');
-    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
-  }
-
-  if(req.body.id === '05') {
-    console.log('');
-    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
-  }
-
-  if(req.body.id === '06') {
-    console.log('');
-    //port.write(new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x03]));
-  }
   return res.status(201).json();
 };
 

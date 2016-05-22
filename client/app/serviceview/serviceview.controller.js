@@ -19,7 +19,7 @@ angular.module('infoSystemApp')
       },400);
 
       $scope.lampenstromEinmessen = function() {
-        Sent.sentVal({ id: '01' });
+        Sent.sentVal({ id: '1' });
       };
 
       //console.log('$scope.refresh ' + $scope.refresh);
