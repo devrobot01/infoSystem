@@ -11,7 +11,7 @@
                         <div style="position: absolute; left: 0.4em;">Lampenwechsel in:</div>
                         <div style="position: absolute; right: 0.4em;">{{device.powerOn_hours}}h</div>
                         <div style="position: relative; top: 2em; width: auto; padding-left: 0.4em; padding-right: 0.4em">
-                            <button ng-hide="isLoggedIn()" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
+                            <button ng-hide="isLoggedIn();" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
                                     ng-click="switchPower(tindex,dindex)">I/O</button>
                             <button ng-show="isLoggedIn()" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
                                     ng-click="adminview(device)">Konfiguration</button>

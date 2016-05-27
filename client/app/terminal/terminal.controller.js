@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .controller('TerminalCtrl', function ($scope, Modal, Auth, socket, $http, Sent) {
+  .controller('TerminalCtrl', function ($rootScope, $scope, Modal, Auth, socket, $http, Sent) {
     $scope.addGroup = function () {
       var group = {
         group: [{
@@ -10,7 +10,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: -1,
           service_date: '',
-          error_code: [1,2],
+          error_code: [],
           error_date: '',
           ampere_is: '',
           ampere_target: '',
@@ -20,7 +20,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: -1,
           service_date: '',
-          error_code: -1,
+          error_code: [],
           error_date: '',
           ampere_is: '',
           ampere_target: '',
@@ -30,7 +30,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: -1,
           service_date: '',
-          error_code: -1,
+          error_code: [],
           error_date: '',
           ampere_is: '',
           ampere_target: '',
@@ -45,8 +45,9 @@ angular.module('infoSystemApp')
 
     $http.get('/api/serialports').success(function (awesomeThings) {
       $scope.awesomeThings = awesomeThings;
-      socket.syncUpdates('serialport', $scope.awesomeThings);
-      console.log($scope.awesomeThings);
+      socket.syncUpdates('serialport', $scope.awesomeThings, function(){
+        $scope.updateVal();
+      });
       $scope.updateVal();
     });
 
@@ -75,13 +76,13 @@ angular.module('infoSystemApp')
           var values = $scope.awesomeThings[key].value[5];
           values += $scope.awesomeThings[key].value[4];
           //$scope.deviceList[_modul].group[0].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[5]); // To convert back to hex, you can use toString num.toString(16)
-          $scope.deviceList[_modul].group[0].powerOn_hours = 9999 - parseInt(values,16); // To convert back to hex, you can use toString num.toString(16)
+          $scope.deviceList[_modul].group[2].powerOn_hours = parseInt(values,16); // To convert back to hex, you can use toString num.toString(16)
           values = $scope.awesomeThings[key].value[7];
           values += $scope.awesomeThings[key].value[6];
-          $scope.deviceList[_modul].group[1].powerOn_hours = 9999 - parseInt(values,16);
+          $scope.deviceList[_modul].group[1].powerOn_hours = parseInt(values,16);
           values = $scope.awesomeThings[key].value[9];
           values += $scope.awesomeThings[key].value[8];
-          $scope.deviceList[_modul].group[2].powerOn_hours = 9999 - parseInt(values,16);
+          $scope.deviceList[_modul].group[0].powerOn_hours = parseInt(values,16);
         }
         // 01 = Strom ist Werte
         if ($scope.awesomeThings[key].value[3] == '01') {
@@ -92,13 +93,13 @@ angular.module('infoSystemApp')
           var values = $scope.awesomeThings[key].value[5];
           values += $scope.awesomeThings[key].value[4];
           //$scope.deviceList[_modul].group[0].powerOn_hours = $scope.convertHex($scope.awesomeThings[key].value[5]); // To convert back to hex, you can use toString num.toString(16)
-          $scope.deviceList[_modul].group[0].ampere_is = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
+          $scope.deviceList[_modul].group[2].ampere_is = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
           values = $scope.awesomeThings[key].value[7];
           values += $scope.awesomeThings[key].value[6];
           $scope.deviceList[_modul].group[1].ampere_is = parseInt(values,16)/100;
           values = $scope.awesomeThings[key].value[9];
           values += $scope.awesomeThings[key].value[8];
-          $scope.deviceList[_modul].group[2].ampere_is = parseInt(values,16)/100;
+          $scope.deviceList[_modul].group[0].ampere_is = parseInt(values,16)/100;
         }
         // 02 = Strom soll Wert
         if ($scope.awesomeThings[key].value[3] == '02') {
@@ -108,13 +109,13 @@ angular.module('infoSystemApp')
           //hex stundenzahl in int wandeln
           var values = $scope.awesomeThings[key].value[5];
           values += $scope.awesomeThings[key].value[4];
-          $scope.deviceList[_modul].group[0].ampere_target = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
+          $scope.deviceList[_modul].group[2].ampere_target = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
           values = $scope.awesomeThings[key].value[7];
           values += $scope.awesomeThings[key].value[6];
           $scope.deviceList[_modul].group[1].ampere_target = parseInt(values,16)/100;
           values = $scope.awesomeThings[key].value[9];
           values += $scope.awesomeThings[key].value[8];
-          $scope.deviceList[_modul].group[2].ampere_target = parseInt(values,16)/100;
+          $scope.deviceList[_modul].group[0].ampere_target = parseInt(values,16)/100;
         }
         if ($scope.awesomeThings[key].value[3] == '03') {
           /*if (angular.isUndefined($scope.deviceList[key])) {
@@ -135,23 +136,72 @@ angular.module('infoSystemApp')
            $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
         }
         if ($scope.awesomeThings[key].value[3] == '05') {
-          /*if (angular.isUndefined($scope.deviceList[key])) {
-           $scope.addGroup();
-           }
-           //hex stundenzahl in int wandeln
-           $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];
-           $scope.deviceList[key].group[1].powerOn_hours = $scope.awesomeThings[key].value[7];
-           $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
+          if (angular.isUndefined($scope.deviceList[_modul])) {
+            console.log("Missing Group");
+          }
+          var values = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
+          var key = values.length;
+
+          console.log(values);
+          if(values[key] == 1){
+            $scope.deviceList[_modul].group[2].error_code[0] = 1;
+          }if(values[key] != 1){
+            $scope.deviceList[_modul].group[2].error_code[0] = 0;
+          }if(values[key - 1] == 1){
+            $scope.deviceList[_modul].group[2].error_code[1] = 2;
+          }if(values[key - 1] != 1){
+            $scope.deviceList[_modul].group[2].error_code[1] = 0;
+          }if(values[key - 2] == 1){
+            $scope.deviceList[_modul].group[2].error_code[2] = 3;
+          }if(values[key - 2] != 1){
+            $scope.deviceList[_modul].group[2].error_code[2] = 0;
+          }if(values[key - 3] == 1){
+            $scope.deviceList[_modul].group[2].error_code[3] = 4;
+          }if(values[key - 3] != 1){
+            $scope.deviceList[_modul].group[2].error_code[3] = 0;
+          }
+          console.log($scope.deviceList[_modul].group[2].error_code);
         }
         if ($scope.awesomeThings[key].value[3] == '06') {
 
-          /*if (angular.isUndefined($scope.deviceList[key])) {
-           $scope.addGroup();
-           }
-           //hex stundenzahl in int wandeln
-           $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];
-           $scope.deviceList[key].group[1].powerOn_hours = $scope.awesomeThings[key].value[7];
-           $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
+          if (angular.isUndefined($scope.deviceList[_modul])) {
+            console.log("Missing Group");
+          }
+          //hex stundenzahl in int wandeln
+          var values = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
+          var key = 0;
+          if(values.length > 6){
+            key = values.length - 6;
+          }
+          if(values[key] == 1) {
+            $scope.deviceList[_modul].group[2].power = true;
+          } if(values[key] != 1) {
+            $scope.deviceList[_modul].group[2].power = false;
+          } if(values[key + 2] == 1) {
+            $scope.deviceList[_modul].group[1].power = true;
+          } if(values[key + 2] != 1) {
+            $scope.deviceList[_modul].group[1].power = false;
+          } if(values[key + 4] == 1) {
+            $scope.deviceList[_modul].group[0].power = true;
+          } if(values[key + 4] != 1) {
+            $scope.deviceList[_modul].group[0].power = false;
+          }
+
+          if(values[key + 1] == 1) {
+            $scope.deviceList[_modul].group[2].uv = true;
+          }if(values[key + 1] != 1) {
+            $scope.deviceList[_modul].group[2].uv = false;
+          } if(values[key + 3] == 1) {
+            $scope.deviceList[_modul].group[1].uv = true;
+          }if(values[key + 3] != 1) {
+            $scope.deviceList[_modul].group[1].uv = false;
+          } if(values[key + 5] == 1) {
+            $scope.deviceList[_modul].group[0].uv = true;
+          }if(values[key + 5] != 1) {
+            $scope.deviceList[_modul].group[0].uv = false;
+          }
+
+
         }
         if ($scope.awesomeThings[key].value[3] == '07') {
 
@@ -180,6 +230,10 @@ angular.module('infoSystemApp')
     $scope.switchPower = function (device, group) {
       if (!Auth.isLoggedIn()) {
         console.log("row: " + device + " col: " + group);
+        Sent.sentVal({ type: '2', modul: group + 1, device: device });
+        $http.get('/api/serialports').success(function (awesomeThings) {
+          $scope.awesomeThings = awesomeThings;
+        })
         if ($scope.deviceList[group].group[device].power === false) {
           $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
         } else {

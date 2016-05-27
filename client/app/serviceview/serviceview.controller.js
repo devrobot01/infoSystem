@@ -1,12 +1,8 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .controller('ServiceviewCtrl', function ($scope, Sent, Modal) {
-    $scope.message = 'Hello';
-
+  .controller('ServiceviewCtrl', function ($scope, Sent) {
     $scope.refresh = false;
-
-    console.log();
 
     $scope.refreshValues = function () {
       $scope.refresh = !$scope.refresh;
@@ -20,11 +16,13 @@ angular.module('infoSystemApp')
         }
       },400);
 
-
-
       $scope.lampenstromEinmessen = function() {
-        Sent.sentVal({ id: '1' });
+        Sent.sentVal({ type: '1' });
       };
+
+      $scope.resetBrstd = function() {
+        Sent.sentVal({ type: '0' });
+      }
 
       //console.log('$scope.refresh ' + $scope.refresh);
     }

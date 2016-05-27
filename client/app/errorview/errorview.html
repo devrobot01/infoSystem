@@ -1,11 +1,11 @@
 <div class="col-md-12">
-    <div ng-repeat="alarm in modal.arg.error_code">
+    <div ng-repeat="alarm in modal.arg.error_code track by $index">
         <div class="alert alert-danger" role="alert" ng-show="alarm > 0 && alarm < 6">
             <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
             <span class="sr-only">Alarm:</span>
-            <span ng-show="alarm == 1">Alarm: Haube offen</span>
-            <span ng-show="alarm == 2">Alarm: Unterdruck fehlt</span>
-            <span ng-show="alarm == 3">Alarm: UV Lampe defekt</span>
+            <span ng-show="alarm == 1">Alarm: UV Lampe defekt</span>
+            <span ng-show="alarm == 2">Alarm: Haube offen</span>
+            <span ng-show="alarm == 3">Alarm: Unterdruck fehlt</span>
             <span ng-show="alarm == 4">Alarm: UV Röhren wechseln</span>
             <span ng-show="alarm == 5">Alarm: UV Röhren bestellen</span>
         </div>

@@ -38,7 +38,6 @@ angular.module('infoSystemApp')
           var oldItem = _.find(array, {_id: item._id});
           var index = array.indexOf(oldItem);
           var event = 'created';
-
           // replace oldItem if it exists
           // otherwise just add item to the collection
           if (oldItem) {

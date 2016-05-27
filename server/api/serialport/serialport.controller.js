@@ -21,6 +21,9 @@ var serialportsList;
 function waitForDevice(callback) {
   setTimeout(callback, 3);
 }
+function waitForDevice1(callback) {
+  setTimeout(callback, 3000);
+}
 
 function loadSerialportsList() {
   Serialport.find(function (err, serialports) {
@@ -38,14 +41,15 @@ var dataArray = [];
   port.open(function (err) {
     var modul = 0;
     var modulArray = [
-      new Buffer([0x02, 0x01, 0x01, 0x00, 0x00, 0x05]),
-      new Buffer([0x02, 0x01, 0x01, 0x00, 0x01, 0x05]),
-      new Buffer([0x02, 0x01, 0x01, 0x00, 0x02, 0x05]),
-      new Buffer([0x02, 0x01, 0x01, 0x00, 0x03, 0x05]),
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x00, 0x05]),
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x01, 0x05]),
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x02, 0x05]),
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x03, 0x05]),
       //new Buffer([0x02, 0x01, 0x01, 0x00, 0x04, 0x05]), // macht noch Fehler
       new Buffer([0x02, 0x01, 0x01, 0x00, 0x05, 0x05]),
-      new Buffer([0x02, 0x01, 0x01, 0x00, 0x06, 0x05]),
-      new Buffer([0x02, 0x01, 0x01, 0x00, 0x07, 0x05])
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x06, 0x05]),
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x07, 0x05]),
+      //new Buffer([0x02, 0x01, 0x01, 0x00, 0x07, 0x05])
     ];
 
     var refreshIntervalId = setInterval(function () {
@@ -98,18 +102,6 @@ var dataArray = [];
           port.write( new Buffer('05', 'hex'));
           console.log(new Buffer('05', 'hex').toString('hex'));
         });
-
-        /*var i = 0;
-        var refreshIntervalId = setInterval(function () {
-          console.log('i' + i);
-          if(i >= 1) {
-            console.log('Write 05');
-            port.write( new Buffer(0x05));
-            //port.write( new Buffer(0x03));
-            //port.write( new Buffer(0x05));
-            clearInterval(refreshIntervalId);
-          }i++
-        }, 30);*/
       }
       dataArray.splice(0, dataArray.length);
     }
@@ -118,8 +110,14 @@ var dataArray = [];
       //console.log('Dataarray: ' + (parseInt(dataArray[2])));
       //console.log('Dataarray +5 : ' + (parseInt(dataArray[2]) + 5));
       //console.log('Dataarray: ' + dataArray[parseInt(dataArray[2])+5]);
-      console.log('Dataarraylen: ' + dataArray);
       if (dataArray[parseInt(dataArray[2]) + 5] !== undefined) {
+        console.log('Dataarraylen: ' + dataArray);
+        console.log('MSB 0: ' + parseInt((dataArray[5][0]),16).toString(2));
+        console.log('MSB 1: ' + parseInt((dataArray[5][1]),16).toString(2));
+        console.log('MSB ' + parseInt((dataArray[5]),16).toString(2));
+        console.log('LSB 0: ' + parseInt((dataArray[4][0]),16).toString(2));
+        console.log('LSB 1: ' + parseInt((dataArray[4][1]),16).toString(2));
+        console.log('LSB ' + parseInt((dataArray[4]),16).toString(2));
         //console.log('############# True #############');
         //dataArray.splice(0,dataArray.length);
       }
@@ -141,8 +139,7 @@ var dataArray = [];
             //console.log('newThing Modul: ' + newThing.modul + ' ' + 'Modul :' + serialportsList[key].modul);
             //console.log('SerialPort: ' + serialportsList[key].modul);
             if (serialportsList[key].modul == newThing.modul && serialportsList[key].type == newThing.type) {
-              Serialport.findById(serialportsList[key]._id, function (err, serialport) {
-                //console.log('findById: ');
+              Serialport.findById(serialportsList[key]._id, {upsert: true}, function (err, serialport) {
                 if (err) {
                   return handleError(res, err);
                 }
@@ -158,10 +155,7 @@ var dataArray = [];
             }
           }
         }
-        //console.log(_modul);
-        //console.log(serialportsList);
         if (_modul == false) {
-          console.log('create: ');
           Serialport.create(newThing, function (err, serialport) {
             if (err) {
               return handleError(res, err);
@@ -176,33 +170,34 @@ var dataArray = [];
 
 // Creates a new serialport in the DB.
 exports.sent = function (req, res) {
-  console.log(req.body);
-  console.log(req.body.type);
-  console.log(req.body.modul);
 
-  var xorBuffer = function (buffer) {
-    // TODO: XOR aller buffer vals und dann kommando abschicken
-    //var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x00, 0x00, 0x03, 0x00]);
-    console.log('Value befor: ' + buffer.toString('hex'));
-    buffer.toJSON();
-    var value = buffer.slice(0);
-    var xorVar = new Buffer('0' + value[1], 'hex');
-    for (var val = 1; val < buffer.length - 2; val++) {
-      xorVar = xor(new Buffer(xorVar), new Buffer('0' + value[val + 1], 'hex'));
+  if (req.body.type !== undefined) {
+    if (req.body.device === undefined) {
+      req.body.device = 3;
     }
-    value[value.length-1] = xorVar.toString('hex');
-    console.log('Value after: ' + value.toString('hex'));
-    buffer = new Buffer(value, 'hex');
-    console.log('Buffer: ' + buffer.toString('hex'));
-    return buffer;
-  };
+    if (req.body.modul === undefined) {
+      req.body.modul = 1;
+    }
+    console.log(req.body);
 
-  console.log('lampenstrom wird eingemessen');
-  var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x0 + req.body.type, 0x03, 0x01, 0x03, 0x03]);
-  xorBuffer(buffer);
-  port.write(xorBuffer(buffer));
+    var xorBuffer = function (buffer) {
+      buffer.toJSON();
+      var value = buffer.slice(0);
+      var xorVar = new Buffer('0' + value[1], 'hex');
+      for (var val = 1; val < buffer.length - 2; val++) {
+        xorVar = xor(new Buffer(xorVar), new Buffer('0' + value[val + 1], 'hex'));
+      }
+      value[value.length - 1] = xorVar.toString('hex');
+      buffer = new Buffer(value, 'hex');
+      return buffer;
+    };
 
-  return res.status(201).json();
+    var buffer = new Buffer([0x02, 0x0 + req.body.modul, 0x0 + req.body.modul, 0x02, 0x00, 0x0 + req.body.device, 0x0 + req.body.type, 0x03, 0x00]);
+    //var buffer = new Buffer([0x02, 0x01, 0x01, 0x02, 0x00, 0x03, 0x01, 0x03, 0x00]);
+    xorBuffer(buffer);
+    port.write(xorBuffer(buffer));
+  }
+  return res.status(200).json();
 };
 
 // Get list of serialports
