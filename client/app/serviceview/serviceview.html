@@ -9,13 +9,13 @@
         </div>
     </div>
 
-    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues(); lampenstromEinmessen()">Lampenstrom einmessen</button>
-    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Betriebsstunden zurücksetzen</button>
-    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Lampenstrom Istwert <span class="badge"> {{modal.arg.ampere_is}} A</span></button>
-    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Lampenstrom Sollwert <span class="badge"> {{modal.arg.ampere_target}} A</span></button>
-    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues()">Eingänge testen</button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues(); lampenstromKalibrieren()">Lampenstrom einmessen</button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues(); resetBrstd()">Betriebsstunden zurücksetzen</button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues(); ampere_is()">Lampenstrom Istwert <span class="badge"> {{modal.arg.ampere_is}} A</span></button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues(); ampere_target()">Lampenstrom Sollwert <span class="badge"> {{modal.arg.ampere_target}} A</span></button>
+    <button type="button" class="btn btn-default col-md-12 service" ng-click="refreshValues(); errorRelais()">Verahlten Fehler-Relais</button>
 
-    <div class="panel panel-default" style="margin-top: 0.5em">
+    <!-- <div class="panel panel-default" style="margin-top: 0.5em">
         <div class="panel-heading">Schaltverhalten Error Relais</div>
         <div class="panel-body">
             <div class="row">
@@ -32,5 +32,5 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>

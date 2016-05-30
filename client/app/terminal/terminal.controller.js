@@ -8,30 +8,33 @@ angular.module('infoSystemApp')
           power: false,
           uv: false,
           powerOn_hours: '0',
-          service_code: -1,
+          service_code: '',
           service_date: '',
           error_code: [],
-          error_date: '',
+          error_display: '',
+          error_state: '',
           ampere_is: '',
           ampere_target: '',
         }, {
           power: false,
           uv: false,
           powerOn_hours: '0',
-          service_code: -1,
+          service_code: '',
           service_date: '',
           error_code: [],
-          error_date: '',
+          error_display: '',
+          error_state: '',
           ampere_is: '',
           ampere_target: '',
         }, {
           power: false,
           uv: false,
           powerOn_hours: '0',
-          service_code: -1,
+          service_code: '',
           service_date: '',
           error_code: [],
-          error_date: '',
+          error_display: '',
+          error_state: '',
           ampere_is: '',
           ampere_target: '',
         }]
@@ -46,7 +49,10 @@ angular.module('infoSystemApp')
     $http.get('/api/serialports').success(function (awesomeThings) {
       $scope.awesomeThings = awesomeThings;
       socket.syncUpdates('serialport', $scope.awesomeThings, function(){
+        $scope.awesomeThings = awesomeThings;
+
         $scope.updateVal();
+        console.log($scope.awesomeThings);
       });
       $scope.updateVal();
     });
@@ -107,60 +113,121 @@ angular.module('infoSystemApp')
             console.log("Missing Group");
           }
           //hex stundenzahl in int wandeln
-          var values = $scope.awesomeThings[key].value[5];
-          values += $scope.awesomeThings[key].value[4];
-          $scope.deviceList[_modul].group[2].ampere_target = parseInt(values,16)/100; // To convert back to hex, you can use toString num.toString(16)
-          values = $scope.awesomeThings[key].value[7];
-          values += $scope.awesomeThings[key].value[6];
-          $scope.deviceList[_modul].group[1].ampere_target = parseInt(values,16)/100;
-          values = $scope.awesomeThings[key].value[9];
-          values += $scope.awesomeThings[key].value[8];
-          $scope.deviceList[_modul].group[0].ampere_target = parseInt(values,16)/100;
+          var valuesAmpere = $scope.awesomeThings[key].value[5];
+          valuesAmpere += $scope.awesomeThings[key].value[4];
+          $scope.deviceList[_modul].group[2].ampere_target = parseInt(valuesAmpere,16)/100; // To convert back to hex, you can use toString num.toString(16)
+          valuesAmpere = $scope.awesomeThings[key].value[7];
+          valuesAmpere += $scope.awesomeThings[key].value[6];
+          $scope.deviceList[_modul].group[1].ampere_target = parseInt(valuesAmpere,16)/100;
+          valuesAmpere = $scope.awesomeThings[key].value[9];
+          valuesAmpere += $scope.awesomeThings[key].value[8];
+          $scope.deviceList[_modul].group[0].ampere_target = parseInt(valuesAmpere,16)/100;
         }
         if ($scope.awesomeThings[key].value[3] == '03') {
-          /*if (angular.isUndefined($scope.deviceList[key])) {
-           $scope.addGroup();
-           }
-           //hex stundenzahl in int wandeln
-           $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];
-           $scope.deviceList[key].group[1].powerOn_hours = $scope.awesomeThings[key].value[7];
-           $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
         }
         if ($scope.awesomeThings[key].value[3] == '04') {
-          /*if (angular.isUndefined($scope.deviceList[key])) {
-           $scope.addGroup();
-           }
-           //hex stundenzahl in int wandeln
-           $scope.deviceList[key].group[0].powerOn_hours = $scope.awesomeThings[key].value[5];
-           $scope.deviceList[key].group[1].powerOn_hours = $scope.awesomeThings[key].value[7];
-           $scope.deviceList[key].group[2].powerOn_hours = $scope.awesomeThings[key].value[9];*/
         }
+
         if ($scope.awesomeThings[key].value[3] == '05') {
           if (angular.isUndefined($scope.deviceList[_modul])) {
             console.log("Missing Group");
           }
-          var values = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
-          var key = values.length;
+          var lsb = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
+          var msb = parseInt($scope.awesomeThings[key].value[5],16).toString(2);
+          var i = lsb.length;
+          var timerBestellen = 9990;
+          var timerWechseln = 9980;
 
-          console.log(values);
-          if(values[key] == 1){
-            $scope.deviceList[_modul].group[2].error_code[0] = 1;
-          }if(values[key] != 1){
-            $scope.deviceList[_modul].group[2].error_code[0] = 0;
-          }if(values[key - 1] == 1){
-            $scope.deviceList[_modul].group[2].error_code[1] = 2;
-          }if(values[key - 1] != 1){
-            $scope.deviceList[_modul].group[2].error_code[1] = 0;
-          }if(values[key - 2] == 1){
-            $scope.deviceList[_modul].group[2].error_code[2] = 3;
-          }if(values[key - 2] != 1){
-            $scope.deviceList[_modul].group[2].error_code[2] = 0;
-          }if(values[key - 3] == 1){
+          if($scope.deviceList[_modul].group[2].powerOn_hours <= timerBestellen){
+            $scope.deviceList[_modul].group[2].error_code[4] = 5;
+            $scope.deviceList[_modul].group[2].service_code = "UV Röhren bestellen"
+          }if($scope.deviceList[_modul].group[2].powerOn_hours <= timerWechseln){
             $scope.deviceList[_modul].group[2].error_code[3] = 4;
-          }if(values[key - 3] != 1){
-            $scope.deviceList[_modul].group[2].error_code[3] = 0;
+            $scope.deviceList[_modul].group[2].service_code = "UV Röhren wechseln"
+          }if($scope.deviceList[_modul].group[2].powerOn_hours > timerWechseln && $scope.deviceList[_modul].group[2].powerOn_hours > timerBestellen){
+            $scope.deviceList[_modul].group[2].service_code = ''
+          }if(lsb[i - 1] == 1){
+            $scope.deviceList[_modul].group[2].error_code[0] = 1;
+            $scope.deviceList[_modul].group[2].error_display = "UV Lampe defekt"
+          }if(lsb[i - 1] != 1){
+            $scope.deviceList[_modul].group[2].error_code[0] = 0;
+          }if(lsb[i - 2] == 1){
+            $scope.deviceList[_modul].group[2].error_code[1] = 2;
+            $scope.deviceList[_modul].group[2].error_display = "Haube offen"
+          }if(lsb[i - 2] != 1){
+            $scope.deviceList[_modul].group[2].error_code[1] = 0;
+          }if(lsb[i - 3] == 1){
+            $scope.deviceList[_modul].group[2].error_code[2] = 3;
+            $scope.deviceList[_modul].group[2].error_display = "Unterdruck fehlt"
+          }if(lsb[i - 3] != 1){
+            $scope.deviceList[_modul].group[2].error_code[2] = 0;
+          }if(lsb[i - 1] == 1 || lsb[i - 2] == 1 || lsb[i - 3] == 1){
+            $scope.deviceList[_modul].group[2].error_state = true
+          }if(lsb[i - 1] != 1 && lsb[i - 2] != 1 && lsb[i - 3] != 1){
+            $scope.deviceList[_modul].group[2].error_state = false;
+            $scope.deviceList[_modul].group[2].error_display = "";
           }
-          console.log($scope.deviceList[_modul].group[2].error_code);
+
+          if($scope.deviceList[_modul].group[1].powerOn_hours <= timerBestellen){
+            $scope.deviceList[_modul].group[1].error_code[4] = 5;
+            $scope.deviceList[_modul].group[1].service_code = "UV Röhren bestellen"
+          }if($scope.deviceList[_modul].group[1].powerOn_hours <= timerWechseln){
+            $scope.deviceList[_modul].group[1].error_code[3] = 4;
+            $scope.deviceList[_modul].group[1].service_code = "UV Röhren wechseln"
+          }if($scope.deviceList[_modul].group[1].powerOn_hours > timerWechseln && $scope.deviceList[_modul].group[1].powerOn_hours > timerBestellen){
+            $scope.deviceList[_modul].group[1].service_code = ''
+          }if(lsb[i - 4] == 1){
+            $scope.deviceList[_modul].group[1].error_code[0] = 1;
+            $scope.deviceList[_modul].group[1].error_display = "UV Lampe defekt"
+          }if(lsb[i - 4] != 1){
+            $scope.deviceList[_modul].group[1].error_code[0] = 0;
+          }if(lsb[i - 5] == 1){
+            $scope.deviceList[_modul].group[1].error_code[1] = 2;
+            $scope.deviceList[_modul].group[1].error_display = "Haube offen"
+          }if(lsb[i - 5] != 1){
+            $scope.deviceList[_modul].group[1].error_code[1] = 0;
+          }if(lsb[i - 6] == 1){
+            $scope.deviceList[_modul].group[1].error_code[2] = 3;
+            $scope.deviceList[_modul].group[1].error_display = "Unterdruck fehlt"
+          }if(lsb[i - 6] != 1){
+            $scope.deviceList[_modul].group[1].error_code[2] = 0;
+          }if(lsb[i - 4] == 1 || lsb[i - 5] == 1 || lsb[i - 6] == 1){
+            $scope.deviceList[_modul].group[1].error_state = true
+          }if(lsb[i - 4] != 1 || lsb[i - 5] != 1 || lsb[i - 6] != 1){
+            $scope.deviceList[_modul].group[1].error_state = false;
+            $scope.deviceList[_modul].group[1].error_display = '';
+          }
+
+          if($scope.deviceList[_modul].group[0].powerOn_hours <= timerBestellen){
+            $scope.deviceList[_modul].group[0].error_code[4] = 5;
+            $scope.deviceList[_modul].group[0].service_code = "UV Röhren bestellen"
+          }if($scope.deviceList[_modul].group[0].powerOn_hours <= timerWechseln){
+            $scope.deviceList[_modul].group[0].error_code[3] = 4;
+            $scope.deviceList[_modul].group[0].service_code = "UV Röhren wechseln"
+          }if($scope.deviceList[_modul].group[0].powerOn_hours > timerWechseln && $scope.deviceList[_modul].group[0].powerOn_hours > timerBestellen){
+            $scope.deviceList[_modul].group[0].service_code = ''
+          }if(lsb[i - 7] == 1){
+            $scope.deviceList[_modul].group[0].error_code[0] = 1;
+            $scope.deviceList[_modul].group[0].error_display = "UV Lampe defekt"
+          }if(lsb[i - 7] != 1){
+            $scope.deviceList[_modul].group[0].error_code[0] = 0;
+          }if(lsb[i - 8] == 1){
+            $scope.deviceList[_modul].group[0].error_code[1] = 2;
+            $scope.deviceList[_modul].group[0].error_display = "Haube offen"
+          }if(lsb[i - 8] != 1){
+            $scope.deviceList[_modul].group[0].error_code[1] = 0;
+          }if(msb[msb.length-1] == 1){
+            $scope.deviceList[_modul].group[0].error_code[2] = 3;
+            $scope.deviceList[_modul].group[0].error_display = "Unterdruck fehlt"
+          }if(msb[msb.length-1] != 1){
+            $scope.deviceList[_modul].group[0].error_code[2] = 0;
+          }if(lsb[i - 7] == 1 || lsb[i - 8] == 1 || msb[msb.length-1] == 1){
+            $scope.deviceList[_modul].group[0].error_state = true
+          }if(lsb[i - 7] != 1 && lsb[i - 8] != 1 && msb[msb.length-1] != 1){
+            $scope.deviceList[_modul].group[0].error_state = false;
+            $scope.deviceList[_modul].group[0].error_display = '';
+
+          }
         }
         if ($scope.awesomeThings[key].value[3] == '06') {
 
@@ -168,40 +235,41 @@ angular.module('infoSystemApp')
             console.log("Missing Group");
           }
           //hex stundenzahl in int wandeln
-          var values = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
-          var key = 0;
-          if(values.length > 6){
-            key = values.length - 6;
+          var valuePower = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
+          console.log('awesomeThings: ' + $scope.awesomeThings[key].value[4]);
+          console.log('Key: ' + key);
+          console.log('Power: ' + valuePower);
+          var i = 0;
+          if(valuePower.length > 6){
+            i = valuePower.length - 6;
           }
-          if(values[key] == 1) {
+          if(valuePower[i] == 1) {
             $scope.deviceList[_modul].group[2].power = true;
-          } if(values[key] != 1) {
+          } if(valuePower[i] != 1) {
             $scope.deviceList[_modul].group[2].power = false;
-          } if(values[key + 2] == 1) {
+          } if(valuePower[i + 2] == 1) {
             $scope.deviceList[_modul].group[1].power = true;
-          } if(values[key + 2] != 1) {
+          } if(valuePower[i + 2] != 1) {
             $scope.deviceList[_modul].group[1].power = false;
-          } if(values[key + 4] == 1) {
+          } if(valuePower[i + 4] == 1) {
             $scope.deviceList[_modul].group[0].power = true;
-          } if(values[key + 4] != 1) {
+          } if(valuePower[i + 4] != 1) {
             $scope.deviceList[_modul].group[0].power = false;
           }
 
-          if(values[key + 1] == 1) {
+          if(valuePower[i + 1] == 1) {
             $scope.deviceList[_modul].group[2].uv = true;
-          }if(values[key + 1] != 1) {
+          }if(valuePower[i + 1] != 1) {
             $scope.deviceList[_modul].group[2].uv = false;
-          } if(values[key + 3] == 1) {
+          } if(valuePower[i + 3] == 1) {
             $scope.deviceList[_modul].group[1].uv = true;
-          }if(values[key + 3] != 1) {
+          }if(valuePower[i + 3] != 1) {
             $scope.deviceList[_modul].group[1].uv = false;
-          } if(values[key + 5] == 1) {
+          } if(valuePower[i + 5] == 1) {
             $scope.deviceList[_modul].group[0].uv = true;
-          }if(values[key + 5] != 1) {
+          }if(valuePower[i + 5] != 1) {
             $scope.deviceList[_modul].group[0].uv = false;
           }
-
-
         }
         if ($scope.awesomeThings[key].value[3] == '07') {
 
@@ -223,17 +291,14 @@ angular.module('infoSystemApp')
       }
     };
 
-    $scope.lampenstromEinmessen = function() {
-      Sent.sentVal({ type: '1' });
-    };
-
     $scope.switchPower = function (device, group) {
       if (!Auth.isLoggedIn()) {
         console.log("row: " + device + " col: " + group);
         Sent.sentVal({ type: '2', modul: group + 1, device: device });
         $http.get('/api/serialports').success(function (awesomeThings) {
           $scope.awesomeThings = awesomeThings;
-        })
+          //$scope.updateVal();
+        });
         if ($scope.deviceList[group].group[device].power === false) {
           $scope.deviceList[group].group[device].power = !$scope.deviceList[group].group[device].power;
         } else {

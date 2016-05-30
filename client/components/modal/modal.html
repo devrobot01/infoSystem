@@ -7,7 +7,7 @@
   <div ng-if="modal.showLogin" ng-include="'app/account/login/login.html'"></div>
   <div ng-if="modal.errorview" ng-include="'app/errorview/errorview.html'"></div>
   <div ng-if="modal.serviceview" ng-include="'app/serviceview/serviceview.html'"></div>
-  <div ng-if="modal.html" ng-bind-html="modal.html"></div>&nbsp
+  <div ng-if="modal.html" ng-bind-html="modal.html"></div>
 </div>
 <div class="modal-footer">
   <button ng-repeat="button in modal.buttons" ng-class="button.classes" ng-click="button.click($event)" ng-bind="button.text" class="btn"></button>
