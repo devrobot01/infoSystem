@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .factory('Modal', function ($rootScope, $modal) {
+  .factory('Modal', function ($rootScope, $modal, Arguments, shell) {
     /**
      * Opens a modal
      * @param  {Object} scope      - an object to be merged with modal's scope
@@ -21,10 +21,8 @@ angular.module('infoSystemApp')
         scope: modalScope
       });
     }
-
     // Public API here
     return {
-
       /* Confirmation modals */
       confirm: {
 
@@ -101,7 +99,7 @@ angular.module('infoSystemApp')
               modal: {
                 dismissable: true,
                 title: 'Confirm',
-                html: '<p>Are you sure you want <strong>' + arg + '</strong> this ?</p>',
+                html: '<p>DO you sure you want <strong>' + arg + '</strong> this ?</p>',
                 buttons: [{
                   classes: 'btn-success',
                   text: 'OK',
@@ -119,6 +117,7 @@ angular.module('infoSystemApp')
             }, modalClass);
 
             acceptModal.result.then(function(event) {
+              shell.sentVal();
               acc.apply(event, args);
             });
           };
@@ -136,7 +135,9 @@ angular.module('infoSystemApp')
             var args = Array.prototype.slice.call(arguments),
               arg = args.shift(),
               serviceModal;
+
               console.log(arg);
+            Arguments.set(Array.prototype.slice.call(arguments));
             serviceModal = openModal({
               modal: {
                 dismissable: true,
@@ -227,6 +228,11 @@ angular.module('infoSystemApp')
             });
           };
         },
+      },
+      get: {
+        data: function() {
+          return globalargs;
+        }
       }
     };
   });

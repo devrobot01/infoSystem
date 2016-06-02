@@ -1,8 +1,8 @@
 <div class="col-md-12" ng-controller="TerminalCtrl" id="Terminal" style="margin-bottom: 1em">
     <div id="row{{$index}}" class="row" ng-repeat="(dindex,groupList) in deviceList track by $index" ng-show="$index == _counter">
-        <div class="container-fluid col-sm-offset-2">
+        <div class="container-fluid">
         <ul style="padding-left: 0px" class="icon-list-zaehler2" ng-repeat="deviceList in groupList">
-            <li class="col-sm-3 col-xs-6" style="padding: 3px 3px 3px 3px"
+            <li class="col-sm-4 col-xs-6" style="padding: 3px 3px 3px 3px"
                 ng-repeat="(tindex, device) in deviceList">
                 <div class="terminallist">
                     <div style="height: 14em" class="background">
@@ -12,10 +12,10 @@
                             <button ng-hide="isLoggedIn();" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
                                     ng-click="switchPower(tindex,dindex)">I/O</button>
                             <button ng-show="isLoggedIn()" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
-                                    ng-click="adminview(device)">Konfiguration</button>
+                                    ng-click="adminview(device,tindex,dindex)">Konfiguration</button>
                             <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'onUv': true == device.uv, 'off': true != device.uv}">UV</button>
                             <div style="margin-top: 0.5em;">
-                                <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'warning': device.service_code != '', 'error': device.error_state == true}" ng-click="errorview(device)">{{device.error_display || device.service_code}}</button>
+                                <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'service': device.service_code != '', 'error': device.error_state == true, 'warning': device.warning_state == true}" ng-click="errorview(device)">{{device.error_display || device.service_code || device.warning_display}}</button>
                             </div>
                         </div>
                     </div>
@@ -24,9 +24,9 @@
         </ul>
         </div>
         <div class="text-center">
-            <button style="width: 4.5em; height: 3em" ng-click="go($index - 1);">Zurück</button>
+            <button style="width: 5.5em; height: 4em" ng-click="go($index - 1);">Zurück</button>
             GRUPPE: {{dindex+1}} von {{deviceList.length}}
-            <button style="width: 4.5em; height: 3em" ng-click="go($index + 1)">Vor</button>
+            <button style="width: 5.5em; height: 4em" ng-click="go($index + 1)">Vor</button>
         </div>
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var xor = require('bitwise-xor');
+var shelljs = require('shelljs');
 var Serialport = require('./serialport.model');
 var SerialPort = require('serialport').SerialPort;
 var port = new SerialPort("/dev/ttyUSB0", {
@@ -17,6 +18,7 @@ var port = new SerialPort("/dev/ttyUSB0", {
 }, false);
 
 var serialportsList;
+var intervalTimer = 2 * 1 * 1000;
 
 function waitForDevice(callback) {
   setTimeout(callback, 3);
@@ -33,6 +35,18 @@ function loadSerialportsList() {
     return serialportsList = serialports.slice(0);
   });
 }
+
+function createChecksum(buffer){
+    buffer.toJSON();
+    var value = buffer.slice(0);
+    var xorVar = new Buffer('0' + value[1], 'hex');
+    for (var val = 1; val < buffer.length - 2; val++) {
+      xorVar = xor(new Buffer(xorVar), new Buffer('0' + value[val + 1], 'hex'));
+    }
+    value[value.length - 1] = xorVar.toString('hex');
+    buffer = new Buffer(value, 'hex');
+    return buffer;
+}
 var dataArray = [];
 (function () {
   loadSerialportsList();
@@ -42,11 +56,14 @@ var dataArray = [];
     var modul = 0;
     var modulArray = [
       new Buffer([0x02, 0x01, 0x01, 0x00, 0x00, 0x05]),
+      new Buffer([0x02, 0x02, 0x02, 0x00, 0x00, 0x05]),
       //new Buffer([0x02, 0x01, 0x01, 0x00, 0x00, 0x05]),
       //new Buffer([0x02, 0x01, 0x01, 0x00, 0x03, 0x05]), Modulname senden
       //new Buffer([0x02, 0x01, 0x01, 0x00, 0x04, 0x05]), // macht noch Fehler
       new Buffer([0x02, 0x01, 0x01, 0x00, 0x05, 0x05]),
+      new Buffer([0x02, 0x02, 0x02, 0x00, 0x05, 0x05]),
       new Buffer([0x02, 0x01, 0x01, 0x00, 0x06, 0x05]),
+      new Buffer([0x02, 0x02, 0x02, 0x00, 0x06, 0x05]),
       //new Buffer([0x02, 0x01, 0x01, 0x00, 0x07, 0x05]),
       //new Buffer([0x02, 0x01, 0x01, 0x00, 0x07, 0x05])
     ];
@@ -61,8 +78,10 @@ var dataArray = [];
        // 02 = start, 01 = modul, 01 = modul, 00 = länge der Datenbits bei anfrage immer 00, 00 = Zählerstände Senden, 05 = TYP Anfrage
        port.write(new Buffer([0x02, module[modul], 0x01, 0x00, 0x00, 0x05]));*/
 
-      console.log('Write modul: ' + modul);
+      //console.log('Write modul: ' + modul);
       loadSerialportsList();
+      //var data = modulArray[modul];
+      //console.log(data.toString('hex'))
       port.write(modulArray[modul]);
 
       modul++;
@@ -70,7 +89,7 @@ var dataArray = [];
         modul = 0;
         //clearInterval(refreshIntervalId); // stoppt das Interfal
       }
-    }, 5 * 1 * 1000); // sec * min * faktor*/
+    }, intervalTimer); // sec * min * faktor*/
   });
 
 
@@ -90,6 +109,24 @@ var dataArray = [];
       if (jsonData.hasOwnProperty(key)) {
         dataArray.push(jsonData[count]);
         count++;
+      }
+    }
+    if(dataArray[0] === '02' || dataArray[3] === '05'){
+      var msb = parseInt(dataArray[5]).toString(2);
+
+      var ext = '';
+
+      if(msb.length < 8){
+        var ext = '';
+        for(i = msb.length; i < 8; i++){
+          if(msb[i] != 0 || v[i] != 1){
+            ext += 0;
+          }
+        }
+        msb = ext + msb;
+      }
+      if(msb[3] == 1){
+        shelljs.exec('halt');
       }
     }
     if (dataArray[0] !== '02'){
@@ -122,8 +159,7 @@ var dataArray = [];
         //dataArray.splice(0,dataArray.length);
       }
       if (dataArray[parseInt(dataArray[2]) + 5] !== undefined) {
-
-        console.log('Write 03 EMPFANGSBESTÄTIGUNG'); // EMPFANGSBESTÄTIGUNG SEHR WICHTIG
+        //console.log('Write 03 EMPFANGSBESTÄTIGUNG'); // EMPFANGSBESTÄTIGUNG SEHR WICHTIG
         port.write( new Buffer(0x03)); //Bestätigung schicken das die Daten angekommen sind
         var newThing = {};
         newThing.modul = dataArray[1];
@@ -135,7 +171,7 @@ var dataArray = [];
         if(newThing.value[0] === '02') {
           //console.log('serialportsList ' + serialportsList);
           var _modul = false;
-          console.log('newthing: '+ newThing.modul);
+          //console.log('newthing: '+ newThing.modul);
           for (key in serialportsList) {
             //console.log('newThing Modul: ' + newThing.modul + ' ' + 'Modul :' + serialportsList[key].modul);
             //console.log('SerialPort: ' + serialportsList[key].modul);
@@ -185,28 +221,18 @@ exports.sent = function (req, res) {
     }
     console.log(req.body);
 
-    var xorBuffer = function (buffer) {
-      buffer.toJSON();
-      var value = buffer.slice(0);
-      var xorVar = new Buffer('0' + value[1], 'hex');
-      for (var val = 1; val < buffer.length - 2; val++) {
-        xorVar = xor(new Buffer(xorVar), new Buffer('0' + value[val + 1], 'hex'));
-      }
-      value[value.length - 1] = xorVar.toString('hex');
-      buffer = new Buffer(value, 'hex');
-      return buffer;
-    };
+    console.log("test modul "+ req.body.modul);
+    console.log("test device "+ req.body.device);
     console.log("test ampere_is "+ req.body.ampere_is);
     console.log("test ampere_target " + req.body.ampere_target);
     var buffer = new Buffer([0x02, 0x0 + req.body.modul, 0x0 + req.body.modul, 0x02, 0x00, 0x0 + req.body.device, 0x0 + req.body.type, 0x03, 0x00]);
-    buffer = xorBuffer(buffer);
+    buffer = createChecksum(buffer);
     if(req.body.ampere_is == 1) {
-      console.log("test ampere_is");
       buffer = new Buffer([0x02, 0x01, 0x01, 0x00, 0x01, 0x05]);
     } if(req.body.ampere_target == 1) {
-      console.log("test ampere_target");
       buffer = new Buffer([0x02, 0x01, 0x01, 0x00, 0x02, 0x05]);
     }
+    console.log('buffer ' + buffer.toString('hex'));
     port.write(buffer);
   }
   return res.status(200).json();

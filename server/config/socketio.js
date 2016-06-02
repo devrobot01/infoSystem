@@ -18,6 +18,7 @@ function onConnect(socket) {
   });
 
   // Insert sockets below
+  require('../api/shell/shell.socket').register(socket);
   require('../api/serialport/serialport.socket').register(socket);
   require('../api/thing/thing.socket').register(socket);
 }

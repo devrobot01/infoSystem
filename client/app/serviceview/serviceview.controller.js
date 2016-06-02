@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('infoSystemApp')
-  .controller('ServiceviewCtrl', function ($scope, Sent) {
+  .controller('ServiceviewCtrl', function ($scope, Sent, Arguments) {
     $scope.refresh = false;
 
     $scope.refreshValues = function () {
@@ -18,14 +18,17 @@ angular.module('infoSystemApp')
 
 
       $scope.lampenstromKalibrieren = function() {
-        Sent.sentVal({ type: '1' });
+        $scope.args = Arguments.get();
+        Sent.sentVal({ type: '1' , modul: $scope.args[2]+1, device: $scope.args[1]});
       };
 
       $scope.resetBrstd = function() {
-        Sent.sentVal({ type: '0' });
+        $scope.args = Arguments.get();
+        Sent.sentVal({ modul: $scope.args[2]+1, device: $scope.args[1],  type: '0' });
       };
       $scope.errorRelais = function() {
-        Sent.sentVal({ type: '4' });
+        $scope.args = Arguments.get();
+        Sent.sentVal({ modul: $scope.args[2], type: '4' });
       };
       $scope.ampere_is = function() {
         Sent.sentVal({type: '000', ampere_is: '1' });

@@ -10,6 +10,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: '',
           service_date: '',
+          warning_code: '',
           error_code: [],
           error_display: '',
           error_state: '',
@@ -21,6 +22,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: '',
           service_date: '',
+          warning_code: '',
           error_code: [],
           error_display: '',
           error_state: '',
@@ -32,6 +34,7 @@ angular.module('infoSystemApp')
           powerOn_hours: '0',
           service_code: '',
           service_date: '',
+          warning_code: '',
           error_code: [],
           error_display: '',
           error_state: '',
@@ -52,7 +55,7 @@ angular.module('infoSystemApp')
         $scope.awesomeThings = awesomeThings;
 
         $scope.updateVal();
-        console.log($scope.awesomeThings);
+        //console.log($scope.awesomeThings);
       });
       $scope.updateVal();
     });
@@ -134,99 +137,155 @@ angular.module('infoSystemApp')
           }
           var lsb = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
           var msb = parseInt($scope.awesomeThings[key].value[5],16).toString(2);
-          var i = lsb.length;
-          var timerBestellen = 9990;
-          var timerWechseln = 9980;
+
+          var ext = '';
+
+          if(msb.length < 8){
+            var ext = '';
+            for(i = msb.length; i < 8; i++){
+              if(msb[i] != 0 || v[i] != 1){
+                ext += 0;
+              }
+            }
+            msb = ext + msb;
+          }
+          if(msb.length < 8){
+          var ext = '';
+          for(i = lsb.length; i < 8; i++){
+            if(lsb[i] != 0 || lsb[i] != 1){
+              ext += 0;
+            }
+          }
+          lsb = ext + lsb;
+        }
+          var i = 0;
+          var timerBestellen = 500;
+          var timerWechseln = 0;
+
+          console.log('lsb ' + lsb);
+          console.log('msb ' + msb);
 
           if($scope.deviceList[_modul].group[2].powerOn_hours <= timerBestellen){
-            $scope.deviceList[_modul].group[2].error_code[4] = 5;
+            $scope.deviceList[_modul].group[2].error_code[5] = 6;
             $scope.deviceList[_modul].group[2].service_code = "UV Röhren bestellen"
           }if($scope.deviceList[_modul].group[2].powerOn_hours <= timerWechseln){
-            $scope.deviceList[_modul].group[2].error_code[3] = 4;
-            $scope.deviceList[_modul].group[2].service_code = "UV Röhren wechseln"
+            $scope.deviceList[_modul].group[2].error_code[4] = 5;
+            $scope.deviceList[_modul].group[2].service_code = "UV Röhren ersetzen"
           }if($scope.deviceList[_modul].group[2].powerOn_hours > timerWechseln && $scope.deviceList[_modul].group[2].powerOn_hours > timerBestellen){
             $scope.deviceList[_modul].group[2].service_code = ''
-          }if(lsb[i - 1] == 1){
+          }if(msb[4] == 1){
             $scope.deviceList[_modul].group[2].error_code[0] = 1;
-            $scope.deviceList[_modul].group[2].error_display = "UV Lampe defekt"
-          }if(lsb[i - 1] != 1){
+            $scope.deviceList[_modul].group[2].error_display = "Röhrenfehler"
+          }if(msb[4] != 1){
             $scope.deviceList[_modul].group[2].error_code[0] = 0;
-          }if(lsb[i - 2] == 1){
+          }if(msb[5] == 1){
             $scope.deviceList[_modul].group[2].error_code[1] = 2;
-            $scope.deviceList[_modul].group[2].error_display = "Haube offen"
-          }if(lsb[i - 2] != 1){
-            $scope.deviceList[_modul].group[2].error_code[1] = 0;
-          }if(lsb[i - 3] == 1){
-            $scope.deviceList[_modul].group[2].error_code[2] = 3;
             $scope.deviceList[_modul].group[2].error_display = "Unterdruck fehlt"
-          }if(lsb[i - 3] != 1){
+          }if(msb[5] != 1){
+            $scope.deviceList[_modul].group[2].error_code[1] = 0;
+          }if(msb[6] == 1){
+            $scope.deviceList[_modul].group[2].error_code[2] = 3;
+            $scope.deviceList[_modul].group[2].error_display = "Haube offen"
+          }if(msb[6] != 1){
             $scope.deviceList[_modul].group[2].error_code[2] = 0;
-          }if(lsb[i - 1] == 1 || lsb[i - 2] == 1 || lsb[i - 3] == 1){
-            $scope.deviceList[_modul].group[2].error_state = true
-          }if(lsb[i - 1] != 1 && lsb[i - 2] != 1 && lsb[i - 3] != 1){
+          }if(msb[7] == 1){
+            $scope.deviceList[_modul].group[2].error_code[3] = 4;
+            $scope.deviceList[_modul].group[2].warning_display = "Abluft einschalten"
+            $scope.deviceList[_modul].group[2].warning_state = true;
+          }if(msb[7] != 1){
+            $scope.deviceList[_modul].group[2].error_code[3] = 0;
+          }if(msb[4] == 1 || msb[5] == 1 || msb[6] == 1){
+            $scope.deviceList[_modul].group[2].error_state = true;
+          }if(msb[4] != 1 && msb[5] != 1 && msb[6] != 1){
             $scope.deviceList[_modul].group[2].error_state = false;
-            $scope.deviceList[_modul].group[2].error_display = "";
+            $scope.deviceList[_modul].group[2].error_display = '';
+          }if(msb[7] != 1){
+            $scope.deviceList[_modul].group[2].warning_state = false;
+            $scope.deviceList[_modul].group[2].warning_display = '';
           }
 
           if($scope.deviceList[_modul].group[1].powerOn_hours <= timerBestellen){
-            $scope.deviceList[_modul].group[1].error_code[4] = 5;
+            $scope.deviceList[_modul].group[1].error_code[5] = 6;
             $scope.deviceList[_modul].group[1].service_code = "UV Röhren bestellen"
           }if($scope.deviceList[_modul].group[1].powerOn_hours <= timerWechseln){
-            $scope.deviceList[_modul].group[1].error_code[3] = 4;
-            $scope.deviceList[_modul].group[1].service_code = "UV Röhren wechseln"
+            $scope.deviceList[_modul].group[1].error_code[4] = 5;
+            $scope.deviceList[_modul].group[1].service_code = "UV Röhren ersetzen"
           }if($scope.deviceList[_modul].group[1].powerOn_hours > timerWechseln && $scope.deviceList[_modul].group[1].powerOn_hours > timerBestellen){
             $scope.deviceList[_modul].group[1].service_code = ''
-          }if(lsb[i - 4] == 1){
+          }if(lsb[0] == 1){
             $scope.deviceList[_modul].group[1].error_code[0] = 1;
-            $scope.deviceList[_modul].group[1].error_display = "UV Lampe defekt"
-          }if(lsb[i - 4] != 1){
+            $scope.deviceList[_modul].group[1].error_display = "Röhrenfehler"
+          }if(lsb[0] != 1){
             $scope.deviceList[_modul].group[1].error_code[0] = 0;
-          }if(lsb[i - 5] == 1){
+          }if(lsb[1] == 1){
             $scope.deviceList[_modul].group[1].error_code[1] = 2;
-            $scope.deviceList[_modul].group[1].error_display = "Haube offen"
-          }if(lsb[i - 5] != 1){
-            $scope.deviceList[_modul].group[1].error_code[1] = 0;
-          }if(lsb[i - 6] == 1){
-            $scope.deviceList[_modul].group[1].error_code[2] = 3;
             $scope.deviceList[_modul].group[1].error_display = "Unterdruck fehlt"
-          }if(lsb[i - 6] != 1){
+          }if(lsb[1] != 1){
+            $scope.deviceList[_modul].group[1].error_code[1] = 0;
+          }if(lsb[2] == 1){
+            $scope.deviceList[_modul].group[1].error_code[2] = 3;
+            $scope.deviceList[_modul].group[1].error_display = "Haube offen"
+          }if(lsb[2] != 1){
             $scope.deviceList[_modul].group[1].error_code[2] = 0;
-          }if(lsb[i - 4] == 1 || lsb[i - 5] == 1 || lsb[i - 6] == 1){
-            $scope.deviceList[_modul].group[1].error_state = true
-          }if(lsb[i - 4] != 1 || lsb[i - 5] != 1 || lsb[i - 6] != 1){
+          }if(lsb[3] == 1){
+            $scope.deviceList[_modul].group[1].error_code[3] = 4;
+            $scope.deviceList[_modul].group[1].warning_display = "Abluft einschalten"
+            $scope.deviceList[_modul].group[1].warning_state = true;
+          }if(lsb[3] != 1){
+            $scope.deviceList[_modul].group[1].error_code[3] = 0;
+          }if(lsb[0] == 1 || lsb[1] == 1 || lsb[2] == 1){
+            $scope.deviceList[_modul].group[1].error_state = true;
+          }if(lsb[0] != 1 && lsb[1] != 1 && lsb[2] != 1){
             $scope.deviceList[_modul].group[1].error_state = false;
             $scope.deviceList[_modul].group[1].error_display = '';
+          }if(lsb[3] != 1){
+            $scope.deviceList[_modul].group[1].warning_state = false;
+            $scope.deviceList[_modul].group[1].warning_display = '';
           }
 
+
           if($scope.deviceList[_modul].group[0].powerOn_hours <= timerBestellen){
-            $scope.deviceList[_modul].group[0].error_code[4] = 5;
+            $scope.deviceList[_modul].group[0].error_code[5] = 6;
             $scope.deviceList[_modul].group[0].service_code = "UV Röhren bestellen"
           }if($scope.deviceList[_modul].group[0].powerOn_hours <= timerWechseln){
-            $scope.deviceList[_modul].group[0].error_code[3] = 4;
-            $scope.deviceList[_modul].group[0].service_code = "UV Röhren wechseln"
+            $scope.deviceList[_modul].group[0].error_code[4] = 5;
+            $scope.deviceList[_modul].group[0].service_code = "UV Röhren ersetzen"
           }if($scope.deviceList[_modul].group[0].powerOn_hours > timerWechseln && $scope.deviceList[_modul].group[0].powerOn_hours > timerBestellen){
             $scope.deviceList[_modul].group[0].service_code = ''
-          }if(lsb[i - 7] == 1){
+          }if(lsb[4] == 1){
             $scope.deviceList[_modul].group[0].error_code[0] = 1;
-            $scope.deviceList[_modul].group[0].error_display = "UV Lampe defekt"
-          }if(lsb[i - 7] != 1){
+            $scope.deviceList[_modul].group[0].error_display = "Röhrenfehler"
+          }if(lsb[4] != 1){
             $scope.deviceList[_modul].group[0].error_code[0] = 0;
-          }if(lsb[i - 8] == 1){
+          }if(lsb[5] == 1){
             $scope.deviceList[_modul].group[0].error_code[1] = 2;
-            $scope.deviceList[_modul].group[0].error_display = "Haube offen"
-          }if(lsb[i - 8] != 1){
-            $scope.deviceList[_modul].group[0].error_code[1] = 0;
-          }if(msb[msb.length-1] == 1){
-            $scope.deviceList[_modul].group[0].error_code[2] = 3;
             $scope.deviceList[_modul].group[0].error_display = "Unterdruck fehlt"
-          }if(msb[msb.length-1] != 1){
+          }if(lsb[5] != 1){
+            $scope.deviceList[_modul].group[0].error_code[1] = 0;
+          }if(lsb[6] == 1){
+            $scope.deviceList[_modul].group[0].error_code[2] = 3;
+            $scope.deviceList[_modul].group[0].error_display = "Haube offen"
+          }if(lsb[6] != 1){
             $scope.deviceList[_modul].group[0].error_code[2] = 0;
-          }if(lsb[i - 7] == 1 || lsb[i - 8] == 1 || msb[msb.length-1] == 1){
-            $scope.deviceList[_modul].group[0].error_state = true
-          }if(lsb[i - 7] != 1 && lsb[i - 8] != 1 && msb[msb.length-1] != 1){
+          }if(lsb[7] == 1){
+            $scope.deviceList[_modul].group[0].error_code[3] = 4;
+            $scope.deviceList[_modul].group[0].warning_display = "Abluft einschalten"
+            $scope.deviceList[_modul].group[0].warning_state = true;
+          }if(lsb[7] != 1){
+            $scope.deviceList[_modul].group[0].error_code[3] = 0;
+          }/*if(msb[msb.length+1] == 1){
+            $scope.deviceList[_modul].group[0].error_code[4] = 5;
+            $scope.deviceList[_modul].group[0].error_display = "Unterdruck fehlt"
+          }if(msb[msb.length+1] != 1){
+            $scope.deviceList[_modul].group[0].error_code[4] = 0;
+          }*/if(lsb[4] == 1 || lsb[5] == 1 || lsb[6] == 1/*msb[msb.length+1] == 1*/){
+            $scope.deviceList[_modul].group[0].error_state = true;
+          }if(lsb[4] != 1 && lsb[5] != 1 && lsb[6] != 1/*&& msb[msb.length+1] != 1*/){
             $scope.deviceList[_modul].group[0].error_state = false;
             $scope.deviceList[_modul].group[0].error_display = '';
-
+          }if(lsb[7] != 1){
+            $scope.deviceList[_modul].group[0].warning_state = false;
+            $scope.deviceList[_modul].group[0].warning_display = '';
           }
         }
         if ($scope.awesomeThings[key].value[3] == '06') {
@@ -236,9 +295,6 @@ angular.module('infoSystemApp')
           }
           //hex stundenzahl in int wandeln
           var valuePower = parseInt($scope.awesomeThings[key].value[4],16).toString(2);
-          console.log('awesomeThings: ' + $scope.awesomeThings[key].value[4]);
-          console.log('Key: ' + key);
-          console.log('Power: ' + valuePower);
           var i = 0;
           if(valuePower.length > 6){
             i = valuePower.length - 6;
@@ -318,7 +374,7 @@ angular.module('infoSystemApp')
       }
     };
 
-    $scope.adminview = Modal.confirm.service(function (device) {});
+    $scope.adminview = Modal.confirm.service(function (device,tindex,dindex) {});
 
     $scope.errorview = Modal.confirm.error(function (device) {})
   });

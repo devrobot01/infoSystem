@@ -37,8 +37,11 @@
     background-color: #a3aca6;
 }
 
-.terminallist .warning {
+.terminallist .service {
     background: #f0ad4e;
+}
+.terminallist .warning{
+    background: #f07219;
 }
 
 .terminallist .error {

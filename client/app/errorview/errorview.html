@@ -3,15 +3,20 @@
         <div class="alert alert-danger" role="alert" ng-show="alarm > 0 && alarm <= 3">
             <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
             <span class="sr-only">Alarm:</span>
-            <span ng-show="alarm == 1">Alarm: UV Lampe defekt</span>
-            <span ng-show="alarm == 2">Alarm: Haube offen</span>
-            <span ng-show="alarm == 3">Alarm: Unterdruck fehlt</span>
+            <span ng-show="alarm == 1">Alarm: Röhrenfehler</span>
+            <span ng-show="alarm == 2">Alarm: Unterdruck fehlt</span>
+            <span ng-show="alarm == 3">Alarm: Haube offen</span>
         </div>
-        <div class="alert alert-warning" role="alert" ng-show="alarm >= 4 && alarm < 6">
+        <div class="alert alert-warning" role="alert" ng-show="alarm == 4">
             <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
             <span class="sr-only">Service:</span>
-            <span ng-show="alarm == 4">Service: UV Röhren wechseln</span>
-            <span ng-show="alarm == 5">Service: UV Röhren bestellen</span>
+            <span ng-show="alarm == 4">Warning: Abluft einschaltenn</span>
+        </div>
+        <div class="alert alert-warning" role="alert" ng-show="alarm >= 5 && alarm < 6">
+            <span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+            <span class="sr-only">Service:</span>
+            <span ng-show="alarm == 5">Service: UV Röhren ersetzen</span>
+            <span ng-show="alarm == 6">Service: UV Röhren bestellen</span>
         </div>
     </div>
 </div>
