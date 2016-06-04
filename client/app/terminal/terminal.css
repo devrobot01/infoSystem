@@ -47,6 +47,9 @@
 .terminallist .error {
     background: #d9534f;
 }
+.terminallist .isDisabledCSS {
+    background: #7d7d7d;
+}
 
 .terminallist .front-image {
     /*background: url(/images/yeoman.png) 0 0 no-repeat;*/

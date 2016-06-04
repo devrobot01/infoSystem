@@ -111,24 +111,31 @@ var dataArray = [];
         count++;
       }
     }
-    if(dataArray[0] === '02' || dataArray[3] === '05'){
-      var msb = parseInt(dataArray[5]).toString(2);
 
-      var ext = '';
-
-      if(msb.length < 8){
-        var ext = '';
-        for(i = msb.length; i < 8; i++){
-          if(msb[i] != 0 || v[i] != 1){
-            ext += 0;
+    if(dataArray[0] === '02' && dataArray[3] === '05'){
+      var fillTheBit = function (msb) {
+        if (msb.length < 4) {
+          var ext = '';
+          for (var i = msb.length; i < 4; i++) {
+            if (msb[i] != 0 || v[i] != 1) {
+              ext += 0;
+            }
           }
+          return ext + msb;
         }
-        msb = ext + msb;
-      }
-      if(msb[3] == 1){
-        shelljs.exec('halt');
+      };
+
+      var data = dataArray.toString('hex');
+      var byteArray = parseInt(data.charAt(15)).toString(2);
+      byteArray = fillTheBit(byteArray);
+
+      if(byteArray[3] == 1){
+        console.log('shutdown');
+        //shelljs.exec('service mongod stop');
+        //shelljs.exec('halt');
       }
     }
+
     if (dataArray[0] !== '02'){
       console.log('einzelnes kommando');
       console.log(dataArray[0]);

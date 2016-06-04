@@ -9,10 +9,10 @@
                         <div style="position: absolute; left: 0.4em;">Lampenwechsel in:</div>
                         <div style="position: absolute; right: 0.4em;">{{device.powerOn_hours}}h</div>
                         <div style="position: relative; top: 2em; width: auto; padding-left: 0.4em; padding-right: 0.4em">
-                            <button ng-hide="isLoggedIn();" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
-                                    ng-click="switchPower(tindex,dindex)">I/O</button>
+                            <button ng-hide="isLoggedIn();" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power, 'isDisabledCSS': true == isDisabled}"
+                                    ng-click="switchPower(tindex,dindex);disableButton();" ng-disabled="isDisabled">I/O</button>
                             <button ng-show="isLoggedIn()" style="width: 100%;height: 5em" ng-class="{'onPower': true == device.power, 'off': true != device.power}"
-                                    ng-click="adminview(device,tindex,dindex)">Konfiguration</button>
+                                    ng-click="adminview(device,tindex,dindex)" >Konfiguration</button>
                             <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'onUv': true == device.uv, 'off': true != device.uv}">UV</button>
                             <div style="margin-top: 0.5em;">
                                 <button style="width: 100%;height: 2em; margin-top: 0.5em;" ng-class="{'service': device.service_code != '', 'error': device.error_state == true, 'warning': device.warning_state == true}" ng-click="errorview(device)">{{device.error_display || device.service_code || device.warning_display}}</button>
